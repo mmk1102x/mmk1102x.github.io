@@ -3,36 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mmk1102x | Developer Hub</title>
+    <title>mmk1102x | System Architect</title>
     <style>
         :root {
             --bg: #0d1117; --card: #161b22; --border: #30363d;
             --text: #c9d1d9; --text-dim: #8b949e; --accent: #238636;
-            --link: #58a6ff;
+            --link: #58a6ff; --btn-hover: #21262d;
         }
         body { background: var(--bg); color: var(--text); font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         .container { max-width: 900px; width: 100%; }
         
-        /* Profile Section */
-        #profile { display: flex; align-items: center; gap: 20px; padding: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-        #avatar { width: 100px; height: 100px; border-radius: 50%; border: 1px solid var(--border); }
-        #user-info h1 { margin: 0; font-size: 24px; }
-        #bio { color: var(--text-dim); margin: 5px 0; }
+        #profile { display: flex; align-items: center; gap: 25px; padding: 30px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        #avatar { width: 120px; height: 120px; border-radius: 50%; border: 2px solid var(--border); }
+        #user-info h1 { margin: 0; font-size: 26px; color: #fff; }
+        #bio { color: var(--text-dim); margin: 10px 0; font-size: 16px; line-height: 1.4; }
         
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 30px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
         .stat-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 6px; text-align: center; }
-        .stat-val { font-size: 20px; font-weight: bold; color: var(--accent); }
+        .stat-val { font-size: 22px; font-weight: bold; color: var(--accent); }
 
-        /* Repo Grid */
-        #repo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
-        .repo-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 6px; transition: 0.2s; text-decoration: none; color: inherit; border-left: 4px solid transparent; }
-        .repo-card:hover { border-color: var(--text-dim); border-left-color: var(--accent); background: #1c2128; }
-        .repo-name { color: var(--link); font-weight: bold; margin-bottom: 8px; }
-        .repo-desc { font-size: 14px; color: var(--text-dim); height: 40px; overflow: hidden; }
-        .repo-meta { font-size: 12px; margin-top: 10px; display: flex; gap: 15px; color: var(--text-dim); }
+        #repo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+        .repo-card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 8px; position: relative; }
+        .repo-name { color: var(--link); font-size: 18px; font-weight: bold; text-decoration: none; display: block; margin-bottom: 10px; }
+        .repo-desc { font-size: 14px; color: var(--text-dim); min-height: 40px; margin-bottom: 15px; }
+        
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; border: 1px solid var(--border); transition: 0.2s; }
+        .btn-code { background: var(--btn-hover); color: var(--text); }
+        .btn-live { background: var(--accent); color: #fff; border: transparent; }
+        .btn:hover { opacity: 0.8; transform: translateY(-1px); }
 
-        .loading { text-align: center; padding: 50px; color: var(--accent); font-family: monospace; }
+        .tag { font-size: 12px; color: var(--text-dim); display: flex; align-items: center; gap: 5px; }
     </style>
 </head>
 <body>
@@ -40,68 +41,65 @@
         <div id="profile">
             <img id="avatar" src="" alt="Avatar">
             <div id="user-info">
-                <h1 id="fullname">Loading User...</h1>
+                <h1 id="fullname">Loading...</h1>
                 <p id="bio"></p>
-                <div class="repo-meta" id="social-stats"></div>
+                <div id="location" style="font-size: 13px; color: var(--text-dim);"></div>
             </div>
         </div>
 
-        <div class="stats-grid" id="stats">
-            <div class="stat-card"><div>Repositories</div><div class="stat-val" id="count-repos">-</div></div>
+        <div class="stats-grid">
+            <div class="stat-card"><div>Repos</div><div class="stat-val" id="count-repos">-</div></div>
             <div class="stat-card"><div>Followers</div><div class="stat-val" id="count-followers">-</div></div>
-            <div class="stat-card"><div>Gists</div><div class="stat-val" id="count-gists">-</div></div>
+            <div class="stat-card"><div>Stars</div><div class="stat-val" id="count-stars">-</div></div>
         </div>
 
-        <h2 style="font-size: 16px; color: var(--text-dim); border-bottom: 1px solid var(--border); padding-bottom: 10px;">POPULAR REPOSITORIES</h2>
-        <div id="repo-grid"><div class="loading">> INITIALIZING_SYSTEM...</div></div>
+        <div id="repo-grid"></div>
     </div>
 
     <script>
         const username = 'mmk1102x';
 
-        async function initHub() {
+        async function init() {
             try {
-                // Fetch User Info
-                const userRes = await fetch(`https://api.github.com/users/${username}`);
-                const user = await userRes.json();
-                
-                document.getElementById('avatar').src = user.avatar_url;
-                document.getElementById('fullname').innerText = user.name || user.login;
-                document.getElementById('bio').innerText = user.bio || "No bio available";
-                document.getElementById('count-repos').innerText = user.public_repos;
-                document.getElementById('count-followers').innerText = user.followers;
-                document.getElementById('count-gists').innerText = user.public_gists;
+                const u = await fetch(`https://api.github.com/users/${username}`).then(r => r.json());
+                const r = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=50`).then(r => r.json());
 
-                // Fetch Repos
-                const repoRes = await fetch(`https://api.github.com/users/${username}/repos?sort=pushed&per_page=12`);
-                const repos = await repoRes.json();
-                
+                document.getElementById('avatar').src = u.avatar_url;
+                document.getElementById('fullname').innerText = u.name || u.login;
+                document.getElementById('bio').innerText = u.bio || "Architecting systems...";
+                document.getElementById('location').innerText = `📍 ${u.location || 'Hollow Knight'}`;
+                document.getElementById('count-repos').innerText = u.public_repos;
+                document.getElementById('count-followers').innerText = u.followers;
+
+                let totalStars = r.reduce((s, repo) => s + repo.stargazers_count, 0);
+                document.getElementById('count-stars').innerText = totalStars;
+
                 const grid = document.getElementById('repo-grid');
                 grid.innerHTML = '';
 
-                repos.forEach(repo => {
+                r.forEach(repo => {
                     if (repo.name !== `${username}.github.io`) {
-                        const card = document.createElement('a');
-                        card.className = 'repo-card';
-                        card.href = repo.html_url;
-                        card.target = '_blank';
-                        card.innerHTML = `
-                            <div class="repo-name">${repo.name}</div>
-                            <div class="repo-desc">${repo.description || 'No description provided.'}</div>
-                            <div class="repo-meta">
-                                <span>● ${repo.language || 'Plain'}</span>
-                                <span>★ ${repo.stargazers_count}</span>
-                                <span>🍴 ${repo.forks_count}</span>
+                        const div = document.createElement('div');
+                        div.className = 'repo-card';
+                        
+                        // Если у репо есть страницы, ссылка будет https://username.github.io/repo/
+                        const liveUrl = repo.has_pages ? `https://${username}.github.io/${repo.name}/` : null;
+
+                        div.innerHTML = `
+                            <div class="repo-name">${repo.name.toUpperCase()}</div>
+                            <div class="repo-desc">${repo.description || 'No system description provided.'}</div>
+                            <div class="tag">● ${repo.language || 'Data'} | ⭐ ${repo.stargazers_count}</div>
+                            <div class="btn-group">
+                                <a href="${repo.html_url}" target="_blank" class="btn btn-code">VIEW CODE</a>
+                                ${liveUrl ? `<a href="${liveUrl}" target="_blank" class="btn btn-live">RUN APPLICATION</a>` : ''}
                             </div>
                         `;
-                        grid.appendChild(card);
+                        grid.appendChild(div);
                     }
                 });
-            } catch (e) {
-                console.error("System Error:", e);
-            }
+            } catch (err) { console.error(err); }
         }
-        initHub();
+        init();
     </script>
 </body>
 </html>
