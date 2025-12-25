@@ -5,144 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mmk1102x</title>
     <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg">
+    
+    <!-- GitHub Calendar CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/github-calendar@latest/dist/github-calendar-responsive.css" />
+    
     <style>
         :root {
-            /* GitHub Light Variables */
-            --color-bg-default: #ffffff;
-            --color-bg-subtle: #f6f8fa;
-            --color-fg-default: #24292f;
-            --color-fg-muted: #57606a;
-            --color-fg-accent: #0969da;
-            --color-border-default: #d0d7de;
-            --color-border-muted: #d8dee4;
-            --color-btn-text: #24292f;
-            --color-btn-bg: #f6f8fa;
-            --color-btn-border: rgba(27, 31, 35, 0.15);
-            --color-header-bg: #24292f;
-            --color-header-text: #ffffff;
+            --bg-default: #ffffff;
+            --bg-subtle: #f6f8fa;
+            --fg-default: #24292f;
+            --fg-muted: #57606a;
+            --fg-accent: #0969da;
+            --border-default: #d0d7de;
+            --border-muted: #d8dee4;
+            --btn-bg: #f6f8fa;
+            --btn-border: rgba(27, 31, 35, 0.15);
+            --btn-text: #24292f;
+            --activity-line: #d0d7de;
+            
+            /* Calendar Light Colors */
+            --color-calendar-graph-day-bg: #ebedf0;
+            --color-calendar-graph-day-L1-bg: #9be9a8;
+            --color-calendar-graph-day-L2-bg: #40c463;
+            --color-calendar-graph-day-L3-bg: #30a14e;
+            --color-calendar-graph-day-L4-bg: #216e39;
         }
 
-        [data-theme="dark"] {
-            /* GitHub Dark Variables */
-            --color-bg-default: #0d1117;
-            --color-bg-subtle: #161b22;
-            --color-fg-default: #c9d1d9;
-            --color-fg-muted: #8b949e;
-            --color-fg-accent: #58a6ff;
-            --color-border-default: #30363d;
-            --color-border-muted: #21262d;
-            --color-btn-text: #c9d1d9;
-            --color-btn-bg: #21262d;
-            --color-btn-border: #363b42;
-            --color-header-bg: #161b22;
-            --color-header-text: #f0f6fc;
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-default: #0d1117;
+                --bg-subtle: #161b22;
+                --fg-default: #c9d1d9;
+                --fg-muted: #8b949e;
+                --fg-accent: #58a6ff;
+                --border-default: #30363d;
+                --border-muted: #21262d;
+                --btn-bg: #21262d;
+                --btn-border: #363b42;
+                --btn-text: #c9d1d9;
+                --activity-line: #30363d;
+
+                /* Calendar Dark Colors (Official GitHub Dark Dimmed) */
+                --color-calendar-graph-day-bg: #161b22;
+                --color-calendar-graph-day-L1-bg: #0e4429;
+                --color-calendar-graph-day-L2-bg: #006d32;
+                --color-calendar-graph-day-L3-bg: #26a641;
+                --color-calendar-graph-day-L4-bg: #39d353;
+            }
         }
 
         * { box-sizing: border-box; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            background-color: var(--color-bg-default);
-            color: var(--color-fg-default);
+            background-color: var(--bg-default);
+            color: var(--fg-default);
             margin: 0;
             line-height: 1.5;
             font-size: 14px;
         }
 
-        a { color: var(--color-fg-accent); text-decoration: none; }
+        a { color: var(--fg-accent); text-decoration: none; }
         a:hover { text-decoration: underline; }
-        
-        /* Top Navigation (Fake) */
-        .header-nav {
-            background-color: var(--color-header-bg);
-            padding: 16px 32px;
-            color: var(--color-header-text);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .header-logo svg { fill: white; }
-        
-        .theme-toggle {
-            background: transparent;
-            border: 1px solid var(--color-fg-muted);
-            color: var(--color-header-text);
-            padding: 4px 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-        }
 
-        /* Layout Grid */
-        .main-container {
+        /* Main Layout */
+        .container {
             max-width: 1280px;
             margin: 0 auto;
-            padding: 0 24px; /* Matches GitHub's padding */
+            padding: 24px;
             display: grid;
             grid-template-columns: 1fr;
             gap: 24px;
-            margin-top: 24px;
         }
 
         @media (min-width: 768px) {
-            .main-container {
-                grid-template-columns: 296px 1fr; /* Exact GitHub sidebar width */
+            .container {
+                grid-template-columns: 296px 1fr;
             }
         }
 
-        /* Sidebar (Profile Info) */
+        /* Sidebar */
         .profile-sidebar { position: relative; }
         
-        .avatar-container {
-            width: 296px;
-            z-index: 4;
-        }
-        
         .avatar {
-            width: 100%;
+            width: 260px;
+            max-width: 100%;
             border-radius: 50%;
-            border: 1px solid var(--color-border-muted);
-            box-shadow: 0 0 0 1px var(--color-border-muted);
+            border: 1px solid var(--border-muted);
+            z-index: 1;
         }
 
-        .names { padding: 16px 0; }
-        .p-name { font-size: 24px; line-height: 1.25; font-weight: 600; color: var(--color-fg-default); }
-        .p-nickname { font-size: 20px; line-height: 24px; color: var(--color-fg-muted); font-weight: 300; }
+        .vcard-names { padding: 16px 0; }
+        .p-name { font-size: 24px; line-height: 1.25; font-weight: 600; color: var(--fg-default); display: block; }
+        .p-nickname { font-size: 20px; line-height: 24px; color: var(--fg-muted); font-weight: 300; display: block; }
         
-        .bio { font-size: 16px; margin-bottom: 16px; color: var(--color-fg-default); }
+        .bio { font-size: 16px; margin-bottom: 16px; color: var(--fg-default); }
 
-        .btn-block {
+        .btn-follow {
             display: block;
             width: 100%;
             text-align: center;
-            background-color: var(--color-btn-bg);
-            border: 1px solid var(--color-btn-border);
-            color: var(--color-btn-text);
+            background-color: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            color: var(--btn-text);
             padding: 5px 16px;
             border-radius: 6px;
             font-weight: 500;
             margin-bottom: 16px;
             cursor: pointer;
+            transition: 0.2s;
         }
-        
-        .stats { font-size: 14px; color: var(--color-fg-muted); display: flex; gap: 10px; margin-bottom: 24px; }
-        .stats strong { color: var(--color-fg-default); font-weight: 600; }
-        .stats svg { fill: var(--color-fg-muted); vertical-align: text-bottom; margin-right: 4px; }
+        .btn-follow:hover { background-color: var(--border-muted); text-decoration: none; }
 
-        /* Main Content Column */
-        .content-col { min-width: 0; }
+        .vcard-details { list-style: none; padding: 0; margin: 16px 0; font-size: 14px; }
+        .vcard-details li { display: flex; align-items: center; margin-top: 6px; color: var(--fg-default); }
+        .vcard-details svg { fill: var(--fg-muted); margin-right: 8px; width: 16px; text-align: center; }
 
-        /* Tabs */
+        .stats { font-size: 14px; color: var(--fg-muted); display: flex; gap: 10px; margin-bottom: 24px; }
+        .stats strong { color: var(--fg-default); font-weight: 600; }
+        .stats svg { fill: var(--fg-muted); vertical-align: text-bottom; margin-right: 4px; }
+
+        /* Navigation Tabs */
         .underline-nav {
-            border-bottom: 1px solid var(--color-border-muted);
-            margin-bottom: 24px;
-            overflow-x: auto;
+            border-bottom: 1px solid var(--border-muted);
+            margin-bottom: 16px;
+            margin-top: 24px;
         }
-        .underline-nav-body { display: flex; gap: 8px; }
+        @media (min-width: 768px) { .underline-nav { margin-top: 0; } }
+
+        .underline-nav-body { display: flex; gap: 16px; }
         .nav-item {
             padding: 8px 16px;
             font-size: 14px;
-            color: var(--color-fg-default);
+            color: var(--fg-default);
             border-bottom: 2px solid transparent;
             display: flex;
             align-items: center;
@@ -150,198 +145,175 @@
             white-space: nowrap;
         }
         .nav-item.selected { font-weight: 600; border-bottom-color: #fd8c73; }
-        .nav-item svg { fill: var(--color-fg-muted); }
+        .nav-item svg { fill: var(--fg-muted); }
         .counter {
-            background-color: var(--color-bg-subtle);
-            color: var(--color-fg-default);
+            background-color: var(--btn-border);
+            color: var(--fg-default);
             border-radius: 20px;
             padding: 0 6px;
             font-size: 12px;
-            display: inline-block;
+            font-weight: 500;
         }
 
-        /* Pinned Section */
-        .section-title { font-size: 16px; font-weight: 400; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .section-title { font-size: 16px; font-weight: 400; margin-bottom: 8px; margin-top: 24px; }
+
+        /* Pinned Repos Grid */
         .pinned-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 16px;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
-        @media (min-width: 768px) {
-            .pinned-grid { grid-template-columns: 1fr 1fr; }
-        }
+        @media (min-width: 768px) { .pinned-grid { grid-template-columns: 1fr 1fr; } }
 
         .pinned-item {
-            border: 1px solid var(--color-border-default);
+            border: 1px solid var(--border-default);
             border-radius: 6px;
             padding: 16px;
-            background-color: var(--color-bg-default);
+            background-color: var(--bg-default);
             display: flex;
             flex-direction: column;
         }
+        
         .pinned-header { display: flex; align-items: center; margin-bottom: 8px; }
-        .repo-icon { margin-right: 8px; fill: var(--color-fg-muted); }
-        .repo-link { font-weight: 600; color: var(--color-fg-accent); font-size: 14px; }
-        
-        .repo-desc { 
-            font-size: 12px; 
-            color: var(--color-fg-muted); 
-            margin-bottom: 16px; 
-            flex-grow: 1; 
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        .repo-icon { margin-right: 8px; fill: var(--fg-muted); }
+        .repo-link { font-weight: 600; color: var(--fg-accent); font-size: 14px; word-break: break-all; }
+        .repo-badge {
+            margin-left: auto; border: 1px solid var(--border-default); border-radius: 2em;
+            padding: 0 7px; font-size: 12px; font-weight: 500; color: var(--fg-muted);
         }
-        
-        .repo-meta { font-size: 12px; color: var(--color-fg-muted); display: flex; align-items: center; gap: 16px; }
+        .repo-desc { font-size: 12px; color: var(--fg-muted); margin-bottom: 16px; flex-grow: 1; }
+        .repo-meta { font-size: 12px; color: var(--fg-muted); display: flex; align-items: center; gap: 16px; margin-top: auto;}
         .lang-color {
             width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 4px;
-            border: 1px solid rgba(27,31,35,0.1);
+            border: 1px solid rgba(27,31,35,0.1); vertical-align: -1px;
         }
 
-        /* Activity Timeline */
-        .activity-listing {
-            padding-bottom: 24px;
-            position: relative;
+        /* Calendar Styling */
+        .calendar-section {
+            border: 1px solid var(--border-default);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 24px;
+            min-height: 180px;
         }
-        .activity-listing::before {
+        .js-year-link {
+             pointer-events: none; /* Disable clicking year to avoid reload issues */
+        }
+        
+        /* Overriding GitHub Calendar Library CSS for Dark Mode/Match */
+        .calendar .width-full > .float-left { display: none; } /* Hide "Learn how we count" */
+        .calendar { font-family: inherit; color: var(--fg-default); min-height: initial; border: none; }
+        .calendar-graph text.month { fill: var(--fg-muted); font-size: 10px; }
+        .calendar-graph text.wday { fill: var(--fg-muted); font-size: 9px; }
+        div.contrib-legend { float: right; }
+        div.contrib-legend .legend { position: relative; bottom: -2px; display: inline-block; margin: 0 5px; list-style: none; }
+        div.contrib-legend .legend li { display: inline-block; width: 10px; height: 10px; }
+        
+        /* Contribution Activity List */
+        .timeline-listing { padding-bottom: 24px; position: relative; }
+        .timeline-listing::before {
             content: "";
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 16px;
-            width: 2px;
-            background-color: var(--color-border-muted);
-            z-index: 0;
+            position: absolute; top: 0; bottom: 0; left: 16px;
+            width: 2px; background-color: var(--activity-line); z-index: 0;
         }
-        
-        .timeline-item {
-            position: relative;
-            padding-left: 48px;
-            margin-bottom: 16px;
-            padding-top: 4px;
-        }
-        
+        .timeline-item { position: relative; padding-left: 32px; margin-bottom: 16px; padding-top: 8px; }
         .timeline-icon {
-            position: absolute;
-            left: 0;
-            top: 4px;
-            width: 32px;
-            height: 32px;
-            background-color: var(--color-bg-subtle);
-            border: 2px solid var(--color-bg-default); /* Creates gap effect */
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1;
+            position: absolute; left: 0; top: 12px; width: 32px; height: 32px;
+            background-color: var(--bg-subtle); border: 2px solid var(--bg-default);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1;
         }
-        .timeline-icon svg { fill: var(--color-fg-muted); }
-
-        .timeline-body {
-            color: var(--color-fg-default);
-            font-size: 14px;
-        }
-        .timeline-date { font-size: 12px; color: var(--color-fg-muted); margin-top: 4px; }
-        .commit-link { font-family: monospace; font-size: 12px; color: var(--color-fg-muted); margin-left: 8px; }
-        
-        .loading { padding: 20px; text-align: center; color: var(--color-fg-muted); font-style: italic; }
-
+        .timeline-icon svg { fill: var(--fg-muted); }
+        .timeline-body { display: flex; flex-direction: column; }
+        .timeline-title { font-size: 14px; color: var(--fg-default); }
+        .timeline-date { font-size: 12px; color: var(--fg-muted); margin-top: 2px; }
+        .commit-link { font-family: monospace; font-size: 12px; color: var(--fg-accent); margin-left: 5px; }
+        .loading-text { font-style: italic; color: var(--fg-muted); padding: 20px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <!-- Header (Fake) -->
-    <header class="header-nav">
-        <div class="header-logo">
-            <svg height="32" viewBox="0 0 16 16" width="32"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
-        </div>
-        <button class="theme-toggle" onclick="toggleTheme()">Change Theme</button>
-    </header>
-
-    <div class="main-container">
+    <div class="container">
         
-        <!-- Left Sidebar -->
+        <!-- Left Sidebar: Profile -->
         <aside class="profile-sidebar">
-            <div class="avatar-container">
-                <img id="avatar" class="avatar" src="https://github.com/identicons/mmk1102x.png" alt="Profile">
-            </div>
-            <div class="names">
-                <div id="name" class="p-name">mmk1102x</div>
-                <div id="login" class="p-nickname">mmk1102x</div>
-            </div>
-            <div id="bio" class="bio">Loading...</div>
+            <img id="avatar" class="avatar" src="https://github.com/identicons/mmk1102x.png" alt="Profile">
             
-            <button class="btn-block">Edit profile</button>
+            <div class="vcard-names">
+                <span id="name" class="p-name">mmk1102x</span>
+                <span id="login" class="p-nickname">mmk1102x</span>
+            </div>
+            
+            <div id="bio" class="bio"></div>
+            
+            <a href="https://github.com/mmk1102x" class="btn-follow">Follow</a>
             
             <div class="stats">
-                <span>
+                <a href="https://github.com/mmk1102x?tab=followers" class="Link--secondary">
                     <svg height="16" width="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.5 3.5a2 2 0 100 4 2 2 0 000-4zM2 5.5a3.5 3.5 0 115.898 2.549 5.507 5.507 0 013.034 4.084.75.75 0 11-1.482.235 4.001 4.001 0 00-7.9 0 .75.75 0 01-1.482-.236A5.507 5.507 0 013.102 8.05 3.49 3.49 0 012 5.5zM11 4a.75.75 0 100 1.5 1.5 1.5 0 01.666 2.844.75.75 0 00-.416.672v.352a.75.75 0 00.574.73c1.2.289 2.162 1.2 2.522 2.372a.75.75 0 101.434-.44 5.01 5.01 0 00-2.56-3.012A3 3 0 0011 4z"></path></svg>
                     <strong id="followers">0</strong> followers
-                </span>
+                </a>
                 <span>·</span>
-                <span>
+                <a href="https://github.com/mmk1102x?tab=following" class="Link--secondary">
                     <strong id="following">0</strong> following
-                </span>
+                </a>
             </div>
+
+            <ul class="vcard-details">
+                <li id="location-container" style="display:none">
+                    <svg viewBox="0 0 16 16" width="16" height="16"><path d="m12.596 11.596-3.535 3.536a1.5 1.5 0 0 1-2.122 0l-3.535-3.536a6.5 6.5 0 1 1 9.192-9.193 6.5 6.5 0 0 1 0 9.193Zm-1.06-8.132v-.001a5 5 0 1 0-7.072 7.072L8 14.07l3.536-3.534a5 5 0 0 0 0-7.072ZM8 9a2 2 0 1 1-.001-3.999A2 2 0 0 1 8 9Z"></path></svg>
+                    <span id="location"></span>
+                </li>
+                <li id="email-container" style="display:none">
+                    <svg viewBox="0 0 16 16" width="16" height="16"><path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2ZM1.5 12.251c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V5.809L8.38 9.397a.75.75 0 0 1-.76 0L1.5 5.809v6.442Zm13-8.181v-.32a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25v.32L8 7.88Z"></path></svg>
+                    <a id="email" href="#"></a>
+                </li>
+            </ul>
         </aside>
 
         <!-- Right Content -->
         <div class="content-col">
             
-            <!-- Tabs -->
             <nav class="underline-nav">
                 <div class="underline-nav-body">
                     <a href="#" class="nav-item selected">
-                        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M12.78 6.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 7.28a.75.75 0 011.06-1.06L8 9.94l3.72-3.72a.75.75 0 011.06 0z"></path></svg>
+                        <svg height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3.5l.004 7.752c.002.508.575.808 1.007.545l.621-.621c.546-.546 1.288-.826 2.05-.776h3.495V2.5h-3.495a2.25 2.25 0 00-2.25 2.25v.5zm-1.502.5V2.5a2.25 2.25 0 00-2.25-2.25H1.5v10.5h3.757c.762-.05 1.504.23 2.05.776l.62.621c.433.263 1.005-.037 1.008-.545V5.75z"></path></svg>
                         Overview
                     </a>
                     <a href="https://github.com/mmk1102x?tab=repositories" class="nav-item">
-                        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
+                        <svg height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
                         Repositories
                         <span id="repo-count" class="counter">0</span>
-                    </a>
-                    <a href="#" class="nav-item">
-                        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M0 3.75C0 2.784.784 2 1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0114.25 14H1.75A1.75 1.75 0 010 12.25v-8.5zm1.75-.25a.25.25 0 00-.25.25v8.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25v-8.5a.25.25 0 00-.25-.25H1.75zM3.5 6.25a.75.75 0 01.75-.75h7a.75.75 0 010 1.5h-7a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5h4a.75.75 0 000-1.5h-4z"></path></svg>
-                        Projects
                     </a>
                 </div>
             </nav>
 
-            <!-- Pinned Repos -->
             <div class="section-title">Popular repositories</div>
             <div id="pinned-list" class="pinned-grid">
-                <div class="loading">Loading popular repos...</div>
+                <div class="loading-text">Loading repositories...</div>
             </div>
 
-            <!-- Contribution Activity (30 Commits) -->
+            <div class="section-title">0 contributions in the last year</div>
+            <div class="calendar-section">
+                <div class="calendar">
+                    <div class="loading-text">Loading contribution graph...</div>
+                </div>
+            </div>
+
             <div class="section-title">Contribution activity</div>
-            <div id="activity-list" class="activity-listing">
-                <div class="loading">Loading commits...</div>
+            <div id="activity-list" class="timeline-listing">
+                <div class="loading-text">Loading commits...</div>
             </div>
 
         </div>
     </div>
 
+    <!-- GitHub Calendar Library -->
+    <script src="https://unpkg.com/github-calendar@latest/dist/github-calendar.min.js"></script>
+
     <script>
         const USERNAME = 'mmk1102x';
         
-        // --- Theme Logic ---
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            const next = current === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-        }
-
-        const savedTheme = localStorage.getItem('theme') || 
-                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-        document.documentElement.setAttribute('data-theme', savedTheme);
-
-        // --- Data Fetching ---
-
         async function init() {
             try {
                 // 1. Fetch User Data
@@ -355,14 +327,28 @@
                 document.getElementById('followers').textContent = user.followers;
                 document.getElementById('following').textContent = user.following;
                 document.getElementById('repo-count').textContent = user.public_repos;
+
+                if(user.location) {
+                    document.getElementById('location-container').style.display = 'flex';
+                    document.getElementById('location').textContent = user.location;
+                }
                 
-                // 2. Fetch Repos (for Pinned section)
+                if(user.email) {
+                    document.getElementById('email-container').style.display = 'flex';
+                    const mailLink = document.getElementById('email');
+                    mailLink.textContent = user.email;
+                    mailLink.href = `mailto:${user.email}`;
+                }
+
+                // 2. Fetch Repos for "Popular" Section
                 const reposRes = await fetch(`https://api.github.com/users/${USERNAME}/repos?sort=updated&per_page=100`);
                 const repos = await reposRes.json();
-                
                 renderPinnedRepos(repos);
                 
-                // 3. Fetch Activity
+                // 3. Initialize Calendar
+                GitHubCalendar(".calendar", USERNAME, { responsive: true, tooltips: true });
+
+                // 4. Fetch Activity
                 try {
                     await loadGlobalEvents();
                 } catch (e) {
@@ -371,7 +357,7 @@
                 }
 
             } catch (error) {
-                console.error(error);
+                console.error("Main Error:", error);
             }
         }
 
@@ -379,35 +365,30 @@
             const container = document.getElementById('pinned-list');
             container.innerHTML = '';
             
-            // Filter out forks and sort by Stars descending to mimic "Popular"
             const popular = repos
                 .filter(r => !r.fork)
-                .sort((a, b) => b.stargazers_count - a.stargazers_count)
-                .slice(0, 6); // Take top 6
+                .sort((a, b) => b.stargazers_count - a.stargazers_count || new Date(b.updated_at) - new Date(a.updated_at))
+                .slice(0, 6);
 
             const colors = { 
                 JavaScript: '#f1e05a', HTML: '#e34c26', CSS: '#563d7c', 
-                Python: '#3572A5', Java: '#b07219', TypeScript: '#2b7489', 
-                Shell: '#89e051', C: '#555555', 'C++': '#f34b7d' 
+                Python: '#3572A5', Java: '#b07219', TypeScript: '#2b7489'
             };
 
             popular.forEach(repo => {
-                const langColor = colors[repo.language] || '#ccc';
+                const langColor = colors[repo.language] || '#8b949e';
                 const div = document.createElement('div');
                 div.className = 'pinned-item';
                 div.innerHTML = `
                     <div class="pinned-header">
-                        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" class="repo-icon"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
+                        <svg class="repo-icon" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
                         <a href="${repo.html_url}" class="repo-link" target="_blank">${repo.name}</a>
-                        <span style="margin-left:auto; border:1px solid #d0d7de; border-radius:10px; px:7px; font-size:10px; color:#57606a; padding:0 7px">Public</span>
+                        <span class="repo-badge">Public</span>
                     </div>
                     <div class="repo-desc">${repo.description || ''}</div>
                     <div class="repo-meta">
                         ${repo.language ? `<span><span class="lang-color" style="background:${langColor}"></span>${repo.language}</span>` : ''}
-                        <span>
-                           <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" style="vertical-align:text-bottom"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path></svg>
-                           ${repo.stargazers_count}
-                        </span>
+                        ${repo.stargazers_count > 0 ? `<span><svg height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path></svg> ${repo.stargazers_count}</span>` : ''}
                     </div>
                 `;
                 container.appendChild(div);
@@ -415,10 +396,9 @@
         }
 
         async function loadGlobalEvents() {
-            const res = await fetch(`https://api.github.com/users/${USERNAME}/events?per_page=50`);
-            if (!res.ok) throw new Error('Events fail');
+            const res = await fetch(`https://api.github.com/users/${USERNAME}/events?per_page=60`);
+            if (!res.ok) throw new Error('API Error');
             const events = await res.json();
-            
             const container = document.getElementById('activity-list');
             container.innerHTML = '';
 
@@ -435,20 +415,16 @@
                     });
                 }
             });
-            if(count === 0) throw new Error('No events');
+            if(count === 0) container.innerHTML = '<div class="loading-text">No recent public activity.</div>';
         }
 
         async function loadFallbackCommits(repos) {
-            // Find most recent active repo
             const activeRepo = repos.filter(r => !r.fork).sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at))[0];
             if (!activeRepo) return;
-
             const res = await fetch(`https://api.github.com/repos/${USERNAME}/${activeRepo.name}/commits?per_page=30`);
             const commits = await res.json();
-            
             const container = document.getElementById('activity-list');
             container.innerHTML = '';
-            
             commits.forEach(item => {
                 addTimelineItem(item.commit.message, item.commit.committer.date, activeRepo.name, item.sha, container);
             });
@@ -457,17 +433,17 @@
         function addTimelineItem(msg, date, repoName, sha, container) {
             const div = document.createElement('div');
             div.className = 'timeline-item';
-            
-            const cleanDate = new Date(date);
-            const dateStr = cleanDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            const dateObj = new Date(date);
+            const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             
             div.innerHTML = `
                 <div class="timeline-icon">
-                    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"></path></svg>
+                    <svg height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"></path></svg>
                 </div>
                 <div class="timeline-body">
-                    <span style="font-weight:600">Pushed commit</span>
-                    <a href="https://github.com/${repoName}" target="_blank" style="color:var(--color-fg-default); font-weight:600">${repoName}</a>
+                    <span class="timeline-title">
+                        Pushed to <a href="https://github.com/${repoName}" target="_blank" style="font-weight:600; color:inherit;">${repoName}</a>
+                    </span>
                     <div class="timeline-date">
                         ${msg.split('\n')[0]} 
                         <a href="https://github.com/${repoName}/commit/${sha}" target="_blank" class="commit-link">${sha.substring(0,7)}</a> · ${dateStr}
