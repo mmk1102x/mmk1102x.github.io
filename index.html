@@ -96,7 +96,6 @@
             .activity-card { grid-column: 1 / 4; grid-row: 4 / 5; }
         }
 
-        /* Card Content Styles */
         h2 { font-size: 14px; text-transform: uppercase; color: var(--text-sub); letter-spacing: 1px; margin: 0 0 16px 0; }
         
         /* 1. Profile Card */
@@ -131,12 +130,14 @@
         .progress-fill { height: 100%; border-radius: 4px; animation: slideIn 1s ease-out forwards; width: 0; }
 
         /* 5. Calendar */
-        .calendar-wrapper { min-height: 150px; }
-        /* GitHub Calendar Overrides */
+        .calendar-wrapper { min-height: 120px; }
+        /* HIDE the broken text summary from the library */
+        .calendar .contrib-footer, 
+        .calendar .contrib-column { display: none !important; }
+        .calendar { border: none !important; padding: 0 !important; min-height: 0 !important; }
+        .js-calendar-graph { padding: 0 !important; }
         .js-calendar-graph-svg text.month { fill: var(--text-sub); font-size: 10px; }
         .js-calendar-graph-svg text.wday { fill: var(--text-sub); font-size: 9px; }
-        .calendar { border: none !important; min-height: 0 !important; }
-        .contrib-footer { font-size: 11px; color: var(--text-sub); margin-top: 10px; display: none; }
 
         /* 6. Activity Timeline */
         .commit-row {
@@ -156,6 +157,7 @@
         @keyframes slideIn { from { width: 0; } to { width: var(--w); } }
 
         .loading { color: var(--text-sub); font-style: italic; text-align: center; padding: 20px; }
+        .error-msg { color: #cf222e; text-align: center; font-size: 13px; padding: 10px; }
     </style>
 </head>
 <body>
@@ -204,7 +206,7 @@
 
         <!-- 4. Tech Stack Card -->
         <div class="card tech-card" style="animation-delay: 0.3s">
-            <h2>Top Languages</h2>
+            <h2>Top Languages (by Repo)</h2>
             <div id="lang-list">
                 <div class="loading">Scanning repositories...</div>
             </div>
@@ -237,6 +239,7 @@
             try {
                 // 1. User Profile
                 const userRes = await fetch(`https://api.github.com/users/${USERNAME}`);
+                if(!userRes.ok) throw new Error('User not found');
                 const user = await userRes.json();
                 
                 document.getElementById('avatar').src = user.avatar_url;
@@ -246,27 +249,35 @@
                 document.getElementById('total-repos').textContent = user.public_repos;
 
                 // 2. Repositories (for Stars & Languages)
-                const reposRes = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100`);
+                // Fetch more pages if possible, but 100 is usually enough for overview
+                const reposRes = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100&sort=updated`);
                 const repos = await reposRes.json();
                 
                 calculateStats(repos);
                 
                 // 3. Calendar
+                // We use the library but hide the text summary via CSS because it can be inaccurate
                 GitHubCalendar(".calendar", USERNAME, { responsive: true, tooltips: true });
 
                 // 4. Activity (Events) - For Persona & Timeline
-                const eventsRes = await fetch(`https://api.github.com/users/${USERNAME}/events?per_page=100`);
-                if (eventsRes.ok) {
-                    const events = await eventsRes.json();
-                    analyzePersona(events);
-                    renderActivity(events);
-                } else {
-                    // Fallback if events fail
+                try {
+                    const eventsRes = await fetch(`https://api.github.com/users/${USERNAME}/events?per_page=100`);
+                    if (eventsRes.ok) {
+                        const events = await eventsRes.json();
+                        analyzePersona(events);
+                        renderActivity(events);
+                    } else {
+                        // If blocked by adblockers, try fallback
+                        throw new Error('Events blocked');
+                    }
+                } catch (evtErr) {
+                    console.warn("Events API failed, switching to repo fallback", evtErr);
                     fallbackActivity(repos);
                 }
 
             } catch (e) {
                 console.error("Dashboard Error:", e);
+                document.getElementById('activity-list').innerHTML = `<div class="error-msg">Failed to load data. GitHub API might be rate-limited.</div>`;
             }
         }
 
@@ -276,13 +287,18 @@
             document.getElementById('total-stars').textContent = stars;
 
             // B. Languages
+            // Logic: Count primary language of each repo.
+            // Improvement: If total repos < 10, include forks in the calculation to give better data for new users.
+            const includeForks = repos.length < 10;
             const langCounts = {};
             let total = 0;
+
             repos.forEach(repo => {
-                if (repo.language && !repo.fork) {
-                    langCounts[repo.language] = (langCounts[repo.language] || 0) + 1;
-                    total++;
-                }
+                if (!repo.language) return;
+                if (repo.fork && !includeForks) return; // Skip forks if user has many repos
+
+                langCounts[repo.language] = (langCounts[repo.language] || 0) + 1;
+                total++;
             });
 
             const sortedLangs = Object.entries(langCounts)
@@ -295,11 +311,11 @@
             const colors = { 
                 JavaScript: '#f1e05a', HTML: '#e34c26', CSS: '#563d7c', 
                 Python: '#3572A5', Java: '#b07219', TypeScript: '#2b7489', 
-                Shell: '#89e051', C: '#555555' 
+                Shell: '#89e051', C: '#555555', 'C++': '#f34b7d' 
             };
 
             if (sortedLangs.length === 0) {
-                langContainer.innerHTML = '<div class="loading">No language data found.</div>';
+                langContainer.innerHTML = '<div class="loading">No language data available.</div>';
                 return;
             }
 
@@ -324,7 +340,10 @@
         function analyzePersona(events) {
             // Filter push events
             const pushEvents = events.filter(e => e.type === 'PushEvent');
-            if (pushEvents.length === 0) return;
+            if (pushEvents.length === 0) {
+                document.getElementById('persona-desc').textContent = "No recent pushes found.";
+                return;
+            }
 
             const hours = pushEvents.map(e => new Date(e.created_at).getHours());
             const sum = hours.reduce((a, b) => a + b, 0);
@@ -353,10 +372,14 @@
             let count = 0;
 
             for (const event of events) {
-                if (count >= 10) break; // Limit to 10 for dashboard
-                if (event.type === 'PushEvent') {
-                    for (const commit of event.payload.commits.reverse()) {
-                        if (count >= 10) break;
+                if (count >= 8) break; 
+                // SAFETY CHECK: Ensure payload.commits exists before reading
+                if (event.type === 'PushEvent' && event.payload && event.payload.commits) {
+                    // Reverse to show newest commit in the push first
+                    const commits = [...event.payload.commits].reverse();
+                    
+                    for (const commit of commits) {
+                        if (count >= 8) break;
                         
                         const date = new Date(event.created_at).toLocaleDateString(undefined, {month:'short', day:'numeric'});
                         const msg = commit.message.split('\n')[0];
@@ -373,13 +396,19 @@
                     }
                 }
             }
-            if (count === 0) container.innerHTML = '<div class="loading">No recent commits.</div>';
+            if (count === 0) container.innerHTML = '<div class="loading">No recent commits found.</div>';
         }
 
         async function fallbackActivity(repos) {
-            // If main event feed fails, grab commits from latest repo
-            const activeRepo = repos.filter(r => !r.fork).sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at))[0];
-            if (!activeRepo) return;
+            // Fallback: Get last 10 commits from the most recently updated repo
+            // Logic: Include forks in search if non-forks are rare
+            const sortedRepos = repos.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
+            const activeRepo = sortedRepos[0]; // Just take the freshest one
+            
+            if (!activeRepo) {
+                document.getElementById('activity-list').innerHTML = '<div class="loading">No repositories found.</div>';
+                return;
+            }
 
             const res = await fetch(`https://api.github.com/repos/${USERNAME}/${activeRepo.name}/commits?per_page=10`);
             const commits = await res.json();
