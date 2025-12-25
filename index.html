@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mmk1102x - GitHub Portfolio</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #24292f;
+            --header-bg: #f6f8fa;
+            --border-color: #d0d7de;
+            --card-bg: #ffffff;
+            --link-color: #0969da;
+            --btn-bg: #f6f8fa;
+            --btn-border: rgba(27, 31, 35, 0.15);
+            --meta-color: #57606a;
+            --code-bg: #f6f8fa;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --header-bg: #161b22;
+            --border-color: #30363d;
+            --card-bg: #0d1117;
+            --link-color: #58a6ff;
+            --btn-bg: #21262d;
+            --btn-border: #363b42;
+            --meta-color: #8b949e;
+            --code-bg: #161b22;
+        }
+
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.5;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        a { color: var(--link-color); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        /* Header / Profile */
+        header {
+            background-color: var(--header-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+
+        h1 { margin: 0; font-size: 24px; font-weight: 600; }
+        .bio { color: var(--meta-color); margin-top: 0.5rem; }
+
+        /* Controls */
+        .controls {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .theme-toggle {
+            background-color: var(--btn-bg);
+            border: 1px solid var(--btn-border);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1012px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Section Headers */
+        h2 {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+            font-size: 20px;
+        }
+
+        /* Repos Grid */
+        .repo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .repo-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .repo-name { font-weight: 600; font-size: 16px; margin-bottom: 0.5rem; }
+        .repo-desc { font-size: 14px; color: var(--meta-color); flex-grow: 1; margin-bottom: 1rem; }
+        .repo-meta { font-size: 12px; color: var(--meta-color); display: flex; gap: 1rem; align-items: center; }
+        
+        .lang-circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 4px;
+            background-color: #ccc;
+        }
+
+        /* Commits List */
+        .commit-list {
+            list-style: none;
+            padding: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .commit-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 14px;
+        }
+
+        .commit-item:last-child { border-bottom: none; }
+        
+        .commit-msg { 
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            color: var(--text-color);
+            font-weight: 600;
+        }
+
+        .commit-repo { font-size: 12px; color: var(--meta-color); margin-top: 4px; }
+        .commit-date { font-size: 12px; color: var(--meta-color); white-space: nowrap; margin-left: 10px; }
+
+        .loading { text-align: center; padding: 2rem; color: var(--meta-color); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="controls">
+            <button class="theme-toggle" onclick="toggleTheme()">Toggle Theme</button>
+        </div>
+        <img id="avatar" class="avatar" src="https://github.com/identicons/mmk1102x.png" alt="Profile">
+        <h1 id="name">mmk1102x</h1>
+        <div id="bio" class="bio">Loading profile...</div>
+        <div style="margin-top:10px;">
+            <a href="https://github.com/mmk1102x" target="_blank">View on GitHub</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <h2>Repositories</h2>
+        <div id="repo-list" class="repo-grid">
+            <div class="loading">Loading repositories...</div>
+        </div>
+
+        <h2>Last 30 Commits</h2>
+        <ul id="commit-list" class="commit-list">
+            <div class="loading">Loading activity...</div>
+        </ul>
+
+    </div>
+
+    <script>
+        const USERNAME = 'mmk1102x';
+        
+        // --- Theme Logic ---
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 
+                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        // --- API Fetching ---
+
+        // 1. Fetch Profile
+        fetch(`https://api.github.com/users/${USERNAME}`)
+            .then(r => r.json())
+            .then(user => {
+                document.getElementById('avatar').src = user.avatar_url;
+                document.getElementById('name').textContent = user.name || user.login;
+                document.getElementById('bio').textContent = user.bio || 'No bio available.';
+            })
+            .catch(e => console.error(e));
+
+        // 2. Fetch Repositories
+        fetch(`https://api.github.com/users/${USERNAME}/repos?sort=updated&per_page=100`)
+            .then(r => r.json())
+            .then(repos => {
+                const container = document.getElementById('repo-list');
+                container.innerHTML = '';
+                
+                // Sort by stars then update time, or just keep default 'updated'
+                repos.forEach(repo => {
+                    if (repo.fork) return; // Optional: Hide forks
+
+                    const card = document.createElement('div');
+                    card.className = 'repo-card';
+                    
+                    // Simple color mapping for common languages
+                    const colors = { JavaScript: '#f1e05a', HTML: '#e34c26', CSS: '#563d7c', Python: '#3572A5', Java: '#b07219' };
+                    const langColor = colors[repo.language] || '#ccc';
+
+                    card.innerHTML = `
+                        <div class="repo-name"><a href="${repo.html_url}" target="_blank">${repo.name}</a></div>
+                        <div class="repo-desc">${repo.description || 'No description provided.'}</div>
+                        <div class="repo-meta">
+                            ${repo.language ? `<span><span class="lang-circle" style="background:${langColor}"></span>${repo.language}</span>` : ''}
+                            <span>★ ${repo.stargazers_count}</span>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            })
+            .catch(e => {
+                document.getElementById('repo-list').innerHTML = '<div class="loading">Failed to load repos.</div>';
+            });
+
+        // 3. Fetch Last 30 Commits (via Events API)
+        fetch(`https://api.github.com/users/${USERNAME}/events?per_page=100`)
+            .then(r => r.json())
+            .then(events => {
+                const container = document.getElementById('commit-list');
+                container.innerHTML = '';
+                
+                let commitCount = 0;
+                const maxCommits = 30;
+
+                for (const event of events) {
+                    if (commitCount >= maxCommits) break;
+
+                    if (event.type === 'PushEvent') {
+                        // PushEvent contains a payload with commits
+                        const commits = event.payload.commits.reverse(); // Show newest in push first
+
+                        for (const commit of commits) {
+                            if (commitCount >= maxCommits) break;
+                            
+                            const li = document.createElement('li');
+                            li.className = 'commit-item';
+                            
+                            const date = new Date(event.created_at).toLocaleDateString();
+                            const repoName = event.repo.name;
+                            const repoUrl = `https://github.com/${repoName}`;
+                            // The commit URL structure depends on the repo
+                            const commitUrl = `https://github.com/${repoName}/commit/${commit.sha}`;
+
+                            li.innerHTML = `
+                                <div>
+                                    <div class="commit-msg">
+                                        <a href="${commitUrl}" target="_blank">${commit.message.split('\n')[0]}</a>
+                                    </div>
+                                    <div class="commit-repo">
+                                        on <a href="${repoUrl}" target="_blank">${repoName}</a>
+                                    </div>
+                                </div>
+                                <div class="commit-date">${date}</div>
+                            `;
+                            
+                            container.appendChild(li);
+                            commitCount++;
+                        }
+                    }
+                }
+
+                if (commitCount === 0) {
+                    container.innerHTML = '<div class="loading">No recent public commits found.</div>';
+                }
+            })
+            .catch(e => {
+                document.getElementById('commit-list').innerHTML = '<div class="loading">Failed to load activity.</div>';
+            });
+    </script>
+</body>
+</html>
