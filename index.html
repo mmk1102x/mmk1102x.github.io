@@ -3,37 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mmk1102x | System Architect</title>
+    <title>mmk1102x - Hub</title>
     <style>
         :root {
             --bg: #0d1117; --card: #161b22; --border: #30363d;
             --text: #c9d1d9; --text-dim: #8b949e; --accent: #238636;
             --link: #58a6ff; --btn-hover: #21262d;
         }
-        body { background: var(--bg); color: var(--text); font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        body.light {
+            --bg: #ffffff; --card: #f6f8fa; --border: #d0d7de;
+            --text: #24292f; --text-dim: #57606a; --accent: #2da44e;
+            --link: #0969da; --btn-hover: #ebf0f4;
+        }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
         .container { max-width: 900px; width: 100%; }
         
-        #profile { display: flex; align-items: center; gap: 25px; padding: 30px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
-        #avatar { width: 120px; height: 120px; border-radius: 50%; border: 2px solid var(--border); }
-        #user-info h1 { margin: 0; font-size: 26px; color: #fff; }
-        #bio { color: var(--text-dim); margin: 10px 0; font-size: 16px; line-height: 1.4; }
+        #profile { display: flex; align-items: center; gap: 25px; padding: 30px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; position: relative; }
+        #avatar { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--border); }
+        #user-info h1 { margin: 0; font-size: 24px; }
         
+        .theme-toggle { position: absolute; top: 30px; right: 0; cursor: pointer; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px; font-weight: bold; background: var(--card); color: var(--text); }
+
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
         .stat-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 6px; text-align: center; }
         .stat-val { font-size: 22px; font-weight: bold; color: var(--accent); }
 
         #repo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
-        .repo-card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 8px; position: relative; }
+        .repo-card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 8px; }
         .repo-name { color: var(--link); font-size: 18px; font-weight: bold; text-decoration: none; display: block; margin-bottom: 10px; }
-        .repo-desc { font-size: 14px; color: var(--text-dim); min-height: 40px; margin-bottom: 15px; }
         
         .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-        .btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; border: 1px solid var(--border); transition: 0.2s; }
-        .btn-code { background: var(--btn-hover); color: var(--text); }
+        .btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; border: 1px solid var(--border); transition: 0.2s; color: var(--text); background: var(--btn-hover); }
         .btn-live { background: var(--accent); color: #fff; border: transparent; }
-        .btn:hover { opacity: 0.8; transform: translateY(-1px); }
-
-        .tag { font-size: 12px; color: var(--text-dim); display: flex; align-items: center; gap: 5px; }
     </style>
 </head>
 <body>
@@ -42,9 +43,10 @@
             <img id="avatar" src="" alt="Avatar">
             <div id="user-info">
                 <h1 id="fullname">Loading...</h1>
-                <p id="bio"></p>
+                <p id="bio" style="color: var(--text-dim); margin: 5px 0;"></p>
                 <div id="location" style="font-size: 13px; color: var(--text-dim);"></div>
             </div>
+            <button class="theme-toggle" onclick="document.body.classList.toggle('light')">TOGGLE THEME</button>
         </div>
 
         <div class="stats-grid">
@@ -58,7 +60,6 @@
 
     <script>
         const username = 'mmk1102x';
-
         async function init() {
             try {
                 const u = await fetch(`https://api.github.com/users/${username}`).then(r => r.json());
@@ -70,28 +71,21 @@
                 document.getElementById('location').innerText = `📍 ${u.location || 'Hollow Knight'}`;
                 document.getElementById('count-repos').innerText = u.public_repos;
                 document.getElementById('count-followers').innerText = u.followers;
-
-                let totalStars = r.reduce((s, repo) => s + repo.stargazers_count, 0);
-                document.getElementById('count-stars').innerText = totalStars;
+                document.getElementById('count-stars').innerText = r.reduce((s, repo) => s + repo.stargazers_count, 0);
 
                 const grid = document.getElementById('repo-grid');
                 grid.innerHTML = '';
-
                 r.forEach(repo => {
                     if (repo.name !== `${username}.github.io`) {
                         const div = document.createElement('div');
                         div.className = 'repo-card';
-                        
-                        // Если у репо есть страницы, ссылка будет https://username.github.io/repo/
                         const liveUrl = repo.has_pages ? `https://${username}.github.io/${repo.name}/` : null;
-
                         div.innerHTML = `
                             <div class="repo-name">${repo.name.toUpperCase()}</div>
-                            <div class="repo-desc">${repo.description || 'No system description provided.'}</div>
-                            <div class="tag">● ${repo.language || 'Data'} | ⭐ ${repo.stargazers_count}</div>
+                            <div style="font-size: 14px; color: var(--text-dim); min-height: 40px;">${repo.description || ''}</div>
                             <div class="btn-group">
-                                <a href="${repo.html_url}" target="_blank" class="btn btn-code">VIEW CODE</a>
-                                ${liveUrl ? `<a href="${liveUrl}" target="_blank" class="btn btn-live">RUN APPLICATION</a>` : ''}
+                                <a href="${repo.html_url}" target="_blank" class="btn">VIEW CODE</a>
+                                ${liveUrl ? `<a href="${liveUrl}" target="_blank" class="btn btn-live">LIVE DEMO</a>` : ''}
                             </div>
                         `;
                         grid.appendChild(div);
