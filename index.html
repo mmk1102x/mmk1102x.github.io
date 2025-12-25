@@ -17,42 +17,45 @@
         }
         body { background: var(--bg); color: var(--text); font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; transition: 0.3s; }
         .container { max-width: 900px; width: 100%; }
+        #profile { display: flex; align-items: center; gap: 25px; padding: 20px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; position: relative; }
+        #avatar { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--border); }
+        .theme-toggle { position: absolute; top: 20px; right: 0; cursor: pointer; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px; background: var(--card); color: var(--text); font-weight: bold; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: var(--card); border: 1px solid var(--border); padding: 10px; border-radius: 6px; text-align: center; }
+        .stat-val { font-size: 20px; font-weight: bold; color: var(--accent); }
         
-        #profile { display: flex; align-items: center; gap: 25px; padding: 30px 0; border-bottom: 1px solid var(--border); margin-bottom: 20px; position: relative; }
-        #avatar { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--border); }
-        #user-info h1 { margin: 0; font-size: 24px; }
-        
-        .theme-toggle { position: absolute; top: 30px; right: 0; cursor: pointer; padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 11px; font-weight: bold; background: var(--card); color: var(--text); }
+        /* Activity Graph */
+        .activity-section { margin-bottom: 30px; text-align: center; }
+        .activity-graph { width: 100%; filter: invert(var(--graph-invert, 0)); border: 1px solid var(--border); border-radius: 6px; padding: 10px; background: var(--card); }
+        body.light { --graph-invert: 0.9; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
-        .stat-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 6px; text-align: center; }
-        .stat-val { font-size: 22px; font-weight: bold; color: var(--accent); }
-
-        #repo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
-        .repo-card { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 8px; }
-        .repo-name { color: var(--link); font-size: 18px; font-weight: bold; text-decoration: none; display: block; margin-bottom: 10px; }
-        
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-        .btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; border: 1px solid var(--border); transition: 0.2s; color: var(--text); background: var(--btn-hover); }
-        .btn-live { background: var(--accent); color: #fff; border: transparent; }
+        #repo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+        .repo-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 8px; }
+        .repo-name { color: var(--link); font-size: 16px; font-weight: bold; text-decoration: none; display: block; margin-bottom: 5px; }
+        .btn-live { background: var(--accent); color: #fff; padding: 4px 10px; border-radius: 4px; font-size: 11px; text-decoration: none; font-weight: bold; display: inline-block; margin-top: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="profile">
-            <img id="avatar" src="" alt="Avatar">
+            <img id="avatar" src="" alt="">
             <div id="user-info">
-                <h1 id="fullname">Loading...</h1>
-                <p id="bio" style="color: var(--text-dim); margin: 5px 0;"></p>
+                <h1 id="fullname" style="margin:0; font-size: 22px;">Loading...</h1>
                 <div id="location" style="font-size: 13px; color: var(--text-dim);"></div>
             </div>
-            <button class="theme-toggle" onclick="document.body.classList.toggle('light')">TOGGLE THEME</button>
+            <button class="theme-toggle" onclick="document.body.classList.toggle('light')">THEME_MODE</button>
+        </div>
+
+        <!-- CONTRIBUTION GRAPH -->
+        <div class="activity-section">
+            <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 8px; text-align: left;">CONTRIBUTION_STREAK</div>
+            <img class="activity-graph" src="https://ghchart.rshah.org/238636/mmk1102x" alt="GitHub Chart">
         </div>
 
         <div class="stats-grid">
             <div class="stat-card"><div>Repos</div><div class="stat-val" id="count-repos">-</div></div>
             <div class="stat-card"><div>Followers</div><div class="stat-val" id="count-followers">-</div></div>
-            <div class="stat-card"><div>Stars</div><div class="stat-val" id="count-stars">-</div></div>
+            <div class="stat-card"><div>Total Stars</div><div class="stat-val" id="count-stars">-</div></div>
         </div>
 
         <div id="repo-grid"></div>
@@ -63,12 +66,11 @@
         async function init() {
             try {
                 const u = await fetch(`https://api.github.com/users/${username}`).then(r => r.json());
-                const r = await fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=50`).then(r => r.json());
+                const r = await fetch(`https://api.github.com/users/${username}/repos?sort=pushed&per_page=50`).then(r => r.json());
 
                 document.getElementById('avatar').src = u.avatar_url;
                 document.getElementById('fullname').innerText = u.name || u.login;
-                document.getElementById('bio').innerText = u.bio || "No bio";
-                document.getElementById('location').innerText = `${u.location || ' '}`;
+                document.getElementById('location').innerText = `${u.location || 'No bio'}`;
                 document.getElementById('count-repos').innerText = u.public_repos;
                 document.getElementById('count-followers').innerText = u.followers;
                 document.getElementById('count-stars').innerText = r.reduce((s, repo) => s + repo.stargazers_count, 0);
@@ -81,12 +83,10 @@
                         div.className = 'repo-card';
                         const liveUrl = repo.has_pages ? `https://${username}.github.io/${repo.name}/` : null;
                         div.innerHTML = `
-                            <div class="repo-name">${repo.name.toUpperCase()}</div>
-                            <div style="font-size: 14px; color: var(--text-dim); min-height: 40px;">${repo.description || ''}</div>
-                            <div class="btn-group">
-                                <a href="${repo.html_url}" target="_blank" class="btn">VIEW CODE</a>
-                                ${liveUrl ? `<a href="${liveUrl}" target="_blank" class="btn btn-live">LIVE DEMO</a>` : ''}
-                            </div>
+                            <a href="${repo.html_url}" target="_blank" class="repo-name">${repo.name.toUpperCase()}</a>
+                            <div style="font-size: 13px; color: var(--text-dim); margin: 5px 0;">${repo.description || ''}</div>
+                            <div style="font-size: 11px; color: var(--text-dim);">● ${repo.language || 'Data'}</div>
+                            ${liveUrl ? `<a href="${liveUrl}" target="_blank" class="btn-live">LIVE_DEMO</a>` : ''}
                         `;
                         grid.appendChild(div);
                     }
