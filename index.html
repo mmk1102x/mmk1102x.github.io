@@ -3,423 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mmk1102x - Developer Dashboard</title>
-    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg">
-    <link rel="stylesheet" href="https://unpkg.com/github-calendar@latest/dist/github-calendar-responsive.css" />
-    
+    <title>mmk1102x | Developer Hub</title>
     <style>
         :root {
-            --bg: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #111827;
-            --text-sub: #6b7280;
-            --accent: #2563eb;
-            --border: #e5e7eb;
-            --highlight: #eff6ff;
-            --green: #10b981;
-            --purple: #8b5cf6;
-            --orange: #f59e0b;
-            --app-card-hover: #f9fafb;
+            --bg: #0d1117; --card: #161b22; --border: #30363d;
+            --text: #c9d1d9; --text-dim: #8b949e; --accent: #238636;
+            --link: #58a6ff;
         }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #0d1117;
-                --card-bg: #161b22;
-                --text-main: #f3f4f6;
-                --text-sub: #9ca3af;
-                --accent: #58a6ff;
-                --border: #30363d;
-                --highlight: #1f2937;
-                --green: #238636;
-                --purple: #a371f7;
-                --orange: #d29922;
-                --app-card-hover: #21262d;
-            }
-        }
-
-        * { box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 900px; width: 100%; }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-            transition: background 0.3s;
-        }
-
-        a { color: var(--accent); text-decoration: none; }
-        a:hover { text-decoration: underline; }
-
-        /* BENTO GRID */
-        .bento-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        @media (min-width: 768px) {
-            .bento-container {
-                grid-template-columns: repeat(3, 1fr);
-                grid-template-rows: auto auto auto auto;
-            }
-            
-            .profile-card { grid-column: 1 / 2; grid-row: 1 / 3; }
-            .stats-card   { grid-column: 2 / 3; grid-row: 1 / 2; }
-            .persona-card { grid-column: 3 / 4; grid-row: 1 / 2; }
-            .apps-card    { grid-column: 2 / 4; grid-row: 2 / 3; }
-            .tech-card    { grid-column: 1 / 2; grid-row: 3 / 4; }
-            .graph-card   { grid-column: 2 / 4; grid-row: 3 / 4; }
-            .activity-card{ grid-column: 1 / 4; grid-row: 4 / 5; }
-        }
-
-        /* CARD BASE */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s, border-color 0.2s;
-            animation: fadeIn 0.6s ease-out forwards;
-            opacity: 0;
-        }
-        .card:hover { transform: translateY(-2px); border-color: var(--accent); }
-
-        h2 { font-size: 13px; text-transform: uppercase; color: var(--text-sub); letter-spacing: 1.2px; margin: 0 0 16px 0; font-weight: 700; }
-
-        /* 1. Profile */
-        .avatar-area { text-align: center; margin-bottom: 20px; }
-        .avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--highlight); }
-        .my-name { font-size: 28px; font-weight: 800; margin: 10px 0 5px; background: linear-gradient(45deg, var(--accent), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .my-login { color: var(--text-sub); font-size: 16px; font-family: monospace; }
-        .my-bio { margin-top: 15px; color: var(--text-main); font-size: 15px; line-height: 1.6; text-align: center; }
-        .follow-btn { background: var(--text-main); color: var(--card-bg); padding: 10px; border-radius: 8px; text-align: center; margin-top: auto; font-weight: 600; }
-        .follow-btn:hover { opacity: 0.9; text-decoration: none; }
-
-        /* 2. Stats */
-        .stat-grid { display: flex; justify-content: space-between; gap: 10px; }
-        .stat-box { flex: 1; background: var(--highlight); border-radius: 12px; padding: 15px; text-align: center; }
-        .stat-num { font-size: 24px; font-weight: 800; display: block; color: var(--text-main); }
-        .stat-label { font-size: 12px; color: var(--text-sub); }
-
-        /* 3. Persona */
-        .persona-icon { font-size: 40px; margin-bottom: 10px; }
-        .persona-title { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
-        .persona-desc { font-size: 13px; color: var(--text-sub); }
-
-        /* 4. APPS */
-        .apps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
-        .app-item { border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; flex-direction: column; text-decoration: none; color: inherit; background: var(--card-bg); transition: background 0.2s, border-color 0.2s; position: relative; }
-        .app-item:hover { background: var(--app-card-hover); border-color: var(--accent); text-decoration: none; }
-        .app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-        .app-name { font-weight: 600; font-size: 15px; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .live-indicator { width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); flex-shrink: 0; }
-        .app-desc { font-size: 12px; color: var(--text-sub); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1; }
-        .app-link-icon { margin-top: 10px; font-size: 12px; color: var(--accent); font-weight: 500; display: flex; align-items: center; gap: 4px; }
-
-        /* 5. Tech Stack */
-        .lang-bar { margin-bottom: 12px; }
-        .lang-info { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; font-weight: 500; }
-        .progress-bg { height: 8px; background: var(--highlight); border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; border-radius: 4px; animation: slideIn 1s ease-out forwards; width: 0; }
-
-        /* 6. Graph (FIXED) */
-        .calendar-wrapper { min-height: 120px; display: flex; align-items: center; justify-content: center; }
-        .calendar { border: none !important; padding: 0 !important; width: 100%; }
+        /* Profile Section */
+        #profile { display: flex; align-items: center; gap: 20px; padding: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        #avatar { width: 100px; height: 100px; border-radius: 50%; border: 1px solid var(--border); }
+        #user-info h1 { margin: 0; font-size: 24px; }
+        #bio { color: var(--text-dim); margin: 5px 0; }
         
-        /* HIDE THE UGLY TEXT */
-        .calendar h2, 
-        .calendar .sr-only, 
-        .calendar a[href*="year-list"],
-        .calendar .contrib-footer, 
-        .calendar .contrib-column { 
-            display: none !important; 
-        }
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 30px; }
+        .stat-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 6px; text-align: center; }
+        .stat-val { font-size: 20px; font-weight: bold; color: var(--accent); }
 
-        .js-calendar-graph-svg text.month { fill: var(--text-sub); font-size: 10px; }
-        .js-calendar-graph-svg text.wday { fill: var(--text-sub); font-size: 9px; }
+        /* Repo Grid */
+        #repo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; }
+        .repo-card { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 6px; transition: 0.2s; text-decoration: none; color: inherit; border-left: 4px solid transparent; }
+        .repo-card:hover { border-color: var(--text-dim); border-left-color: var(--accent); background: #1c2128; }
+        .repo-name { color: var(--link); font-weight: bold; margin-bottom: 8px; }
+        .repo-desc { font-size: 14px; color: var(--text-dim); height: 40px; overflow: hidden; }
+        .repo-meta { font-size: 12px; margin-top: 10px; display: flex; gap: 15px; color: var(--text-dim); }
 
-        /* 7. Activity */
-        .commit-row { display: flex; gap: 15px; padding: 12px 0; border-bottom: 1px solid var(--highlight); align-items: center; }
-        .commit-row:last-child { border-bottom: none; }
-        .commit-sha { font-family: monospace; font-size: 12px; background: var(--highlight); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
-        .commit-msg { font-size: 14px; font-weight: 500; flex-grow: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .commit-date { font-size: 12px; color: var(--text-sub); white-space: nowrap; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideIn { from { width: 0; } to { width: var(--w); } }
-
-        .loading { color: var(--text-sub); font-style: italic; text-align: center; padding: 20px; }
-        .error-msg { color: #cf222e; text-align: center; font-size: 13px; padding: 10px; }
+        .loading { text-align: center; padding: 50px; color: var(--accent); font-family: monospace; }
     </style>
 </head>
 <body>
-
-    <div class="bento-container">
-        
-        <!-- 1. Profile -->
-        <div class="card profile-card" style="animation-delay: 0s">
-            <div class="avatar-area">
-                <img id="avatar" class="avatar" src="https://github.com/identicons/mmk1102x.png" alt="Avatar">
-                <h1 id="name" class="my-name">mmk1102x</h1>
-                <div id="login" class="my-login">@mmk1102x</div>
-            </div>
-            <p id="bio" class="my-bio">Fetching...</p>
-            <a href="https://github.com/mmk1102x" class="follow-btn">GitHub Profile</a>
-        </div>
-
-        <!-- 2. Stats -->
-        <div class="card stats-card" style="animation-delay: 0.1s">
-            <h2>Impact</h2>
-            <div class="stat-grid">
-                <div class="stat-box">
-                    <span id="total-stars" class="stat-num">-</span>
-                    <span class="stat-label">Stars</span>
-                </div>
-                <div class="stat-box">
-                    <span id="total-repos" class="stat-num">-</span>
-                    <span class="stat-label">Repos</span>
-                </div>
-                <div class="stat-box">
-                    <span id="followers" class="stat-num">-</span>
-                    <span class="stat-label">Followers</span>
-                </div>
+    <div class="container">
+        <div id="profile">
+            <img id="avatar" src="" alt="Avatar">
+            <div id="user-info">
+                <h1 id="fullname">Loading User...</h1>
+                <p id="bio"></p>
+                <div class="repo-meta" id="social-stats"></div>
             </div>
         </div>
 
-        <!-- 3. Persona -->
-        <div class="card persona-card" style="animation-delay: 0.2s">
-            <h2>Coding Habit</h2>
-            <div style="text-align: center; margin-top: auto; margin-bottom: auto;">
-                <div id="persona-icon" class="persona-icon">🤔</div>
-                <div id="persona-title" class="persona-title">Analyzing...</div>
-                <div id="persona-desc" class="persona-desc">Checking history...</div>
-            </div>
+        <div class="stats-grid" id="stats">
+            <div class="stat-card"><div>Repositories</div><div class="stat-val" id="count-repos">-</div></div>
+            <div class="stat-card"><div>Followers</div><div class="stat-val" id="count-followers">-</div></div>
+            <div class="stat-card"><div>Gists</div><div class="stat-val" id="count-gists">-</div></div>
         </div>
 
-        <!-- 4. APPS -->
-        <div class="card apps-card" style="animation-delay: 0.3s">
-            <h2>Deployments & Apps</h2>
-            <div id="apps-list" class="apps-grid">
-                <div class="loading">Scanning for deployments...</div>
-            </div>
-        </div>
-
-        <!-- 5. Tech Stack -->
-        <div class="card tech-card" style="animation-delay: 0.4s">
-            <h2>Top Languages</h2>
-            <div id="lang-list">
-                <div class="loading">Scanning...</div>
-            </div>
-        </div>
-
-        <!-- 6. Graph -->
-        <div class="card graph-card" style="animation-delay: 0.5s">
-            <h2>Contribution Graph</h2>
-            <div class="calendar-wrapper calendar">
-                <!-- Graph loads here -->
-            </div>
-        </div>
-
-        <!-- 7. Activity -->
-        <div class="card activity-card" style="animation-delay: 0.6s">
-            <h2>Recent History</h2>
-            <div id="activity-list">
-                <div class="loading">Loading commits...</div>
-            </div>
-        </div>
-
+        <h2 style="font-size: 16px; color: var(--text-dim); border-bottom: 1px solid var(--border); padding-bottom: 10px;">POPULAR REPOSITORIES</h2>
+        <div id="repo-grid"><div class="loading">> INITIALIZING_SYSTEM...</div></div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/github-calendar@latest/dist/github-calendar.min.js"></script>
     <script>
-        const USERNAME = 'mmk1102x';
+        const username = 'mmk1102x';
 
-        async function initDashboard() {
+        async function initHub() {
             try {
-                // 1. Profile Data
-                const userRes = await fetch(`https://api.github.com/users/${USERNAME}`);
-                if(!userRes.ok) throw new Error('User not found');
+                // Fetch User Info
+                const userRes = await fetch(`https://api.github.com/users/${username}`);
                 const user = await userRes.json();
                 
                 document.getElementById('avatar').src = user.avatar_url;
-                document.getElementById('name').textContent = user.name || USERNAME;
-                document.getElementById('bio').textContent = user.bio || "Full Stack Developer";
-                document.getElementById('followers').textContent = user.followers;
-                document.getElementById('total-repos').textContent = user.public_repos;
+                document.getElementById('fullname').innerText = user.name || user.login;
+                document.getElementById('bio').innerText = user.bio || "No bio available";
+                document.getElementById('count-repos').innerText = user.public_repos;
+                document.getElementById('count-followers').innerText = user.followers;
+                document.getElementById('count-gists').innerText = user.public_gists;
 
-                // 2. Repositories (Stats, Apps, Languages)
-                const reposRes = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100&sort=updated`);
-                const repos = await reposRes.json();
+                // Fetch Repos
+                const repoRes = await fetch(`https://api.github.com/users/${username}/repos?sort=pushed&per_page=12`);
+                const repos = await repoRes.json();
                 
-                calculateStats(repos);
-                renderApps(repos);
-                
-                // 3. Calendar
-                GitHubCalendar(".calendar", USERNAME, { responsive: true, tooltips: true });
+                const grid = document.getElementById('repo-grid');
+                grid.innerHTML = '';
 
-                // 4. Activity (with Fallback)
-                try {
-                    const eventsRes = await fetch(`https://api.github.com/users/${USERNAME}/events?per_page=100`);
-                    if (eventsRes.ok) {
-                        const events = await eventsRes.json();
-                        const count = renderActivity(events);
-                        if (count > 0) {
-                            analyzePersona(events);
-                        } else {
-                            fallbackActivity(repos);
-                        }
-                    } else { throw new Error('Events blocked'); }
-                } catch (evtErr) {
-                    fallbackActivity(repos);
-                }
-
+                repos.forEach(repo => {
+                    if (repo.name !== `${username}.github.io`) {
+                        const card = document.createElement('a');
+                        card.className = 'repo-card';
+                        card.href = repo.html_url;
+                        card.target = '_blank';
+                        card.innerHTML = `
+                            <div class="repo-name">${repo.name}</div>
+                            <div class="repo-desc">${repo.description || 'No description provided.'}</div>
+                            <div class="repo-meta">
+                                <span>● ${repo.language || 'Plain'}</span>
+                                <span>★ ${repo.stargazers_count}</span>
+                                <span>🍴 ${repo.forks_count}</span>
+                            </div>
+                        `;
+                        grid.appendChild(card);
+                    }
+                });
             } catch (e) {
-                console.error(e);
-                document.getElementById('activity-list').innerHTML = `<div class="error-msg">Dashboard unavailable.</div>`;
+                console.error("System Error:", e);
             }
         }
-
-        function renderApps(repos) {
-            const container = document.getElementById('apps-list');
-            container.innerHTML = '';
-            // Detect apps by homepage URL or has_pages flag
-            const deployments = repos.filter(repo => (repo.homepage && repo.homepage.length > 0) || repo.has_pages);
-
-            if (deployments.length === 0) {
-                container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--text-sub); padding:20px;">No live deployments found.<br><small>Enable GitHub Pages or add a URL to your repo settings.</small></div>';
-                return;
-            }
-
-            deployments.forEach(repo => {
-                let url = repo.homepage;
-                if (!url && repo.has_pages) url = `https://${USERNAME}.github.io/${repo.name}`;
-                if (url && !url.startsWith('http')) url = `https://${url}`;
-                
-                const item = document.createElement('a');
-                item.className = 'app-item';
-                item.href = url;
-                item.target = '_blank';
-                
-                item.innerHTML = `
-                    <div class="app-header">
-                        <span class="app-name">${repo.name}</span>
-                        <div class="live-indicator" title="Live Deployment"></div>
-                    </div>
-                    <div class="app-desc">${repo.description || 'No description provided.'}</div>
-                    <div class="app-link-icon">Launch App <span>↗</span></div>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        function calculateStats(repos) {
-            const stars = repos.reduce((acc, repo) => acc + repo.stargazers_count, 0);
-            document.getElementById('total-stars').textContent = stars;
-
-            const includeForks = repos.length < 20; 
-            const langCounts = {};
-            let total = 0;
-
-            repos.forEach(repo => {
-                if (!repo.language) return;
-                if (repo.fork && !includeForks) return; 
-                langCounts[repo.language] = (langCounts[repo.language] || 0) + 1;
-                total++;
-            });
-
-            const sortedLangs = Object.entries(langCounts).sort((a, b) => b[1] - a[1]).slice(0, 4); 
-            const langContainer = document.getElementById('lang-list');
-            langContainer.innerHTML = '';
-            
-            const colors = { JavaScript: '#f1e05a', HTML: '#e34c26', CSS: '#563d7c', Python: '#3572A5', Java: '#b07219', TypeScript: '#2b7489' };
-
-            if (sortedLangs.length === 0) {
-                langContainer.innerHTML = '<div class="loading">No data.</div>'; return;
-            }
-
-            sortedLangs.forEach(([lang, count]) => {
-                const percent = Math.round((count / total) * 100);
-                const color = colors[lang] || '#8b949e';
-                langContainer.innerHTML += `
-                    <div class="lang-bar">
-                        <div class="lang-info"><span>${lang}</span><span>${percent}%</span></div>
-                        <div class="progress-bg"><div class="progress-fill" style="background:${color}; --w:${percent}%"></div></div>
-                    </div>
-                `;
-            });
-        }
-
-        function analyzePersona(events) {
-            const pushEvents = events.filter(e => e.type === 'PushEvent');
-            if (pushEvents.length === 0) {
-                document.getElementById('persona-desc').textContent = "Coding silently..."; return;
-            }
-            const hours = pushEvents.map(e => new Date(e.created_at).getHours());
-            const avg = hours.reduce((a, b) => a + b, 0) / hours.length;
-
-            let icon = '👨‍💻', title = 'Flexible', desc = 'You code whenever.';
-            if (avg >= 5 && avg < 12) { icon = '☕'; title = 'Early Bird'; desc = 'Committing before breakfast.'; }
-            else if (avg >= 12 && avg < 18) { icon = '🚀'; title = 'Daytime Pro'; desc = 'Business hours efficiency.'; }
-            else if (avg >= 18 || avg < 5) { icon = '🦉'; title = 'Night Owl'; desc = 'Burning the midnight oil.'; }
-
-            document.getElementById('persona-icon').textContent = icon;
-            document.getElementById('persona-title').textContent = title;
-            document.getElementById('persona-desc').textContent = desc;
-        }
-
-        function renderActivity(events) {
-            const container = document.getElementById('activity-list');
-            container.innerHTML = '';
-            let count = 0;
-            for (const event of events) {
-                if (count >= 8) break;
-                if (event.type === 'PushEvent' && event.payload?.commits?.length > 0) {
-                    [...event.payload.commits].reverse().forEach(commit => {
-                        if (count >= 8) return;
-                        addCommitRow(container, commit.message, commit.sha, event.created_at);
-                        count++;
-                    });
-                }
-            }
-            return count;
-        }
-
-        async function fallbackActivity(repos) {
-            const activeRepo = repos.filter(r => !r.fork).sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at))[0];
-            if (!activeRepo) { document.getElementById('activity-list').innerHTML = '<div class="loading">No repos found.</div>'; return; }
-            
-            try {
-                const res = await fetch(`https://api.github.com/repos/${USERNAME}/${activeRepo.name}/commits?per_page=10`);
-                if(!res.ok) throw new Error();
-                const commits = await res.json();
-                
-                const container = document.getElementById('activity-list');
-                container.innerHTML = '';
-                document.getElementById('persona-title').textContent = "Hidden Gem";
-                document.getElementById('persona-desc').textContent = `Analyzing ${activeRepo.name}`;
-                
-                commits.forEach(item => addCommitRow(container, item.commit.message, item.sha, item.commit.committer.date));
-            } catch (e) { document.getElementById('activity-list').innerHTML = '<div class="loading">No history found.</div>'; }
-        }
-
-        function addCommitRow(container, msg, sha, dateStr) {
-            const date = new Date(dateStr).toLocaleDateString(undefined, {month:'short', day:'numeric'});
-            const row = document.createElement('div');
-            row.className = 'commit-row';
-            row.innerHTML = `<span class="commit-sha">${sha.substring(0,7)}</span><span class="commit-msg">${msg.split('\n')[0]}</span><span class="commit-date">${date}</span>`;
-            container.appendChild(row);
-        }
-
-        initDashboard();
+        initHub();
     </script>
 </body>
 </html>
