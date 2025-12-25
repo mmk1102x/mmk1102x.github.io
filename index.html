@@ -3,223 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mmk1102x - GitHub Portfolio</title>
+    <title>mmk1102x</title>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg">
     <style>
         :root {
-            --bg-color: #ffffff;
-            --text-color: #24292f;
-            --header-bg: #f6f8fa;
-            --border-color: #d0d7de;
-            --card-bg: #ffffff;
-            --link-color: #0969da;
-            --btn-bg: #f6f8fa;
-            --btn-border: rgba(27, 31, 35, 0.15);
-            --meta-color: #57606a;
+            /* GitHub Light Variables */
+            --color-bg-default: #ffffff;
+            --color-bg-subtle: #f6f8fa;
+            --color-fg-default: #24292f;
+            --color-fg-muted: #57606a;
+            --color-fg-accent: #0969da;
+            --color-border-default: #d0d7de;
+            --color-border-muted: #d8dee4;
+            --color-btn-text: #24292f;
+            --color-btn-bg: #f6f8fa;
+            --color-btn-border: rgba(27, 31, 35, 0.15);
+            --color-header-bg: #24292f;
+            --color-header-text: #ffffff;
         }
 
         [data-theme="dark"] {
-            --bg-color: #0d1117;
-            --text-color: #c9d1d9;
-            --header-bg: #161b22;
-            --border-color: #30363d;
-            --card-bg: #0d1117;
-            --link-color: #58a6ff;
-            --btn-bg: #21262d;
-            --btn-border: #363b42;
-            --meta-color: #8b949e;
+            /* GitHub Dark Variables */
+            --color-bg-default: #0d1117;
+            --color-bg-subtle: #161b22;
+            --color-fg-default: #c9d1d9;
+            --color-fg-muted: #8b949e;
+            --color-fg-accent: #58a6ff;
+            --color-border-default: #30363d;
+            --color-border-muted: #21262d;
+            --color-btn-text: #c9d1d9;
+            --color-btn-bg: #21262d;
+            --color-btn-border: #363b42;
+            --color-header-bg: #161b22;
+            --color-header-text: #f0f6fc;
         }
 
         * { box-sizing: border-box; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--color-bg-default);
+            color: var(--color-fg-default);
             margin: 0;
             line-height: 1.5;
-            transition: background-color 0.3s, color 0.3s;
+            font-size: 14px;
         }
 
-        a { color: var(--link-color); text-decoration: none; }
+        a { color: var(--color-fg-accent); text-decoration: none; }
         a:hover { text-decoration: underline; }
-
-        /* Header */
-        header {
-            background-color: var(--header-bg);
-            border-bottom: 1px solid var(--border-color);
-            padding: 2rem 1rem;
-            text-align: center;
-            position: relative;
+        
+        /* Top Navigation (Fake) */
+        .header-nav {
+            background-color: var(--color-header-bg);
+            padding: 16px 32px;
+            color: var(--color-header-text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-
-        .avatar {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 1px solid var(--border-color);
-            margin-bottom: 1rem;
-            background-color: var(--bg-color);
-        }
-
-        h1 { margin: 0; font-size: 24px; font-weight: 600; }
-        .bio { color: var(--meta-color); margin-top: 0.5rem; }
-
-        /* Toggle Button */
-        .controls {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-        }
-
+        .header-logo svg { fill: white; }
+        
         .theme-toggle {
-            background-color: var(--btn-bg);
-            border: 1px solid var(--btn-border);
-            color: var(--text-color);
-            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid var(--color-fg-muted);
+            color: var(--color-header-text);
+            padding: 4px 8px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .theme-toggle:hover { background-color: var(--border-color); }
-
-        /* Layout */
-        .container {
-            max-width: 1012px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-
-        h2 {
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.5rem;
-            margin-top: 2rem;
-            font-size: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-        }
-
-        .badge {
             font-size: 12px;
-            font-weight: normal;
-            color: var(--meta-color);
-            background: var(--btn-bg);
-            padding: 2px 8px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
         }
 
-        /* Repositories */
-        .repo-grid {
+        /* Layout Grid */
+        .main-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px; /* Matches GitHub's padding */
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            margin-top: 24px;
         }
 
-        .repo-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.1s;
-        }
-
-        .repo-card:hover { transform: translateY(-2px); border-color: var(--link-color); }
-
-        .repo-name { font-weight: 600; font-size: 16px; margin-bottom: 0.5rem; word-break: break-all; }
-        .repo-desc { font-size: 14px; color: var(--meta-color); flex-grow: 1; margin-bottom: 1rem; }
-        
-        .repo-meta { 
-            font-size: 12px; 
-            color: var(--meta-color); 
-            display: flex; 
-            gap: 1rem; 
-            align-items: center; 
-            margin-top: auto;
-        }
-        
-        .lang-circle {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 4px;
-            position: relative;
-            top: 1px;
-        }
-
-        /* Commits */
-        .commit-list {
-            list-style: none;
-            padding: 0;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            margin-top: 1rem;
-            background: var(--card-bg);
-        }
-
-        .commit-item {
-            padding: 10px 15px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .commit-item:last-child { border-bottom: none; }
-        
-        @media (min-width: 600px) {
-            .commit-item {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
+        @media (min-width: 768px) {
+            .main-container {
+                grid-template-columns: 296px 1fr; /* Exact GitHub sidebar width */
             }
         }
 
-        .commit-msg { 
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-            font-size: 14px;
-            color: var(--text-color);
-            font-weight: 600;
+        /* Sidebar (Profile Info) */
+        .profile-sidebar { position: relative; }
+        
+        .avatar-container {
+            width: 296px;
+            z-index: 4;
+        }
+        
+        .avatar {
+            width: 100%;
+            border-radius: 50%;
+            border: 1px solid var(--color-border-muted);
+            box-shadow: 0 0 0 1px var(--color-border-muted);
         }
 
-        .commit-sub { font-size: 12px; color: var(--meta-color); }
-        .commit-date { font-size: 12px; color: var(--meta-color); white-space: nowrap; }
+        .names { padding: 16px 0; }
+        .p-name { font-size: 24px; line-height: 1.25; font-weight: 600; color: var(--color-fg-default); }
+        .p-nickname { font-size: 20px; line-height: 24px; color: var(--color-fg-muted); font-weight: 300; }
+        
+        .bio { font-size: 16px; margin-bottom: 16px; color: var(--color-fg-default); }
 
-        .loading { text-align: center; padding: 2rem; color: var(--meta-color); font-style: italic; }
-        .error { color: #cf222e; text-align: center; padding: 1rem; }
+        .btn-block {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background-color: var(--color-btn-bg);
+            border: 1px solid var(--color-btn-border);
+            color: var(--color-btn-text);
+            padding: 5px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            cursor: pointer;
+        }
+        
+        .stats { font-size: 14px; color: var(--color-fg-muted); display: flex; gap: 10px; margin-bottom: 24px; }
+        .stats strong { color: var(--color-fg-default); font-weight: 600; }
+        .stats svg { fill: var(--color-fg-muted); vertical-align: text-bottom; margin-right: 4px; }
+
+        /* Main Content Column */
+        .content-col { min-width: 0; }
+
+        /* Tabs */
+        .underline-nav {
+            border-bottom: 1px solid var(--color-border-muted);
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+        .underline-nav-body { display: flex; gap: 8px; }
+        .nav-item {
+            padding: 8px 16px;
+            font-size: 14px;
+            color: var(--color-fg-default);
+            border-bottom: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .nav-item.selected { font-weight: 600; border-bottom-color: #fd8c73; }
+        .nav-item svg { fill: var(--color-fg-muted); }
+        .counter {
+            background-color: var(--color-bg-subtle);
+            color: var(--color-fg-default);
+            border-radius: 20px;
+            padding: 0 6px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        /* Pinned Section */
+        .section-title { font-size: 16px; font-weight: 400; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .pinned-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        @media (min-width: 768px) {
+            .pinned-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .pinned-item {
+            border: 1px solid var(--color-border-default);
+            border-radius: 6px;
+            padding: 16px;
+            background-color: var(--color-bg-default);
+            display: flex;
+            flex-direction: column;
+        }
+        .pinned-header { display: flex; align-items: center; margin-bottom: 8px; }
+        .repo-icon { margin-right: 8px; fill: var(--color-fg-muted); }
+        .repo-link { font-weight: 600; color: var(--color-fg-accent); font-size: 14px; }
+        
+        .repo-desc { 
+            font-size: 12px; 
+            color: var(--color-fg-muted); 
+            margin-bottom: 16px; 
+            flex-grow: 1; 
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .repo-meta { font-size: 12px; color: var(--color-fg-muted); display: flex; align-items: center; gap: 16px; }
+        .lang-color {
+            width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 4px;
+            border: 1px solid rgba(27,31,35,0.1);
+        }
+
+        /* Activity Timeline */
+        .activity-listing {
+            padding-bottom: 24px;
+            position: relative;
+        }
+        .activity-listing::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 16px;
+            width: 2px;
+            background-color: var(--color-border-muted);
+            z-index: 0;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 48px;
+            margin-bottom: 16px;
+            padding-top: 4px;
+        }
+        
+        .timeline-icon {
+            position: absolute;
+            left: 0;
+            top: 4px;
+            width: 32px;
+            height: 32px;
+            background-color: var(--color-bg-subtle);
+            border: 2px solid var(--color-bg-default); /* Creates gap effect */
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+        .timeline-icon svg { fill: var(--color-fg-muted); }
+
+        .timeline-body {
+            color: var(--color-fg-default);
+            font-size: 14px;
+        }
+        .timeline-date { font-size: 12px; color: var(--color-fg-muted); margin-top: 4px; }
+        .commit-link { font-family: monospace; font-size: 12px; color: var(--color-fg-muted); margin-left: 8px; }
+        
+        .loading { padding: 20px; text-align: center; color: var(--color-fg-muted); font-style: italic; }
+
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="controls">
-            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Dark Mode">🌓 Theme</button>
+    <!-- Header (Fake) -->
+    <header class="header-nav">
+        <div class="header-logo">
+            <svg height="32" viewBox="0 0 16 16" width="32"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
         </div>
-        <a href="https://github.com/mmk1102x" target="_blank">
-            <img id="avatar" class="avatar" src="https://github.com/identicons/mmk1102x.png" alt="Profile">
-        </a>
-        <h1 id="name">mmk1102x</h1>
-        <div id="bio" class="bio">Loading profile...</div>
+        <button class="theme-toggle" onclick="toggleTheme()">Change Theme</button>
     </header>
 
-    <div class="container">
+    <div class="main-container">
         
-        <h2>Repositories <span id="repo-count" class="badge">0</span></h2>
-        <div id="repo-list" class="repo-grid">
-            <div class="loading">Loading repositories...</div>
+        <!-- Left Sidebar -->
+        <aside class="profile-sidebar">
+            <div class="avatar-container">
+                <img id="avatar" class="avatar" src="https://github.com/identicons/mmk1102x.png" alt="Profile">
+            </div>
+            <div class="names">
+                <div id="name" class="p-name">mmk1102x</div>
+                <div id="login" class="p-nickname">mmk1102x</div>
+            </div>
+            <div id="bio" class="bio">Loading...</div>
+            
+            <button class="btn-block">Edit profile</button>
+            
+            <div class="stats">
+                <span>
+                    <svg height="16" width="16" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5.5 3.5a2 2 0 100 4 2 2 0 000-4zM2 5.5a3.5 3.5 0 115.898 2.549 5.507 5.507 0 013.034 4.084.75.75 0 11-1.482.235 4.001 4.001 0 00-7.9 0 .75.75 0 01-1.482-.236A5.507 5.507 0 013.102 8.05 3.49 3.49 0 012 5.5zM11 4a.75.75 0 100 1.5 1.5 1.5 0 01.666 2.844.75.75 0 00-.416.672v.352a.75.75 0 00.574.73c1.2.289 2.162 1.2 2.522 2.372a.75.75 0 101.434-.44 5.01 5.01 0 00-2.56-3.012A3 3 0 0011 4z"></path></svg>
+                    <strong id="followers">0</strong> followers
+                </span>
+                <span>·</span>
+                <span>
+                    <strong id="following">0</strong> following
+                </span>
+            </div>
+        </aside>
+
+        <!-- Right Content -->
+        <div class="content-col">
+            
+            <!-- Tabs -->
+            <nav class="underline-nav">
+                <div class="underline-nav-body">
+                    <a href="#" class="nav-item selected">
+                        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M12.78 6.22a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06 0L3.22 7.28a.75.75 0 011.06-1.06L8 9.94l3.72-3.72a.75.75 0 011.06 0z"></path></svg>
+                        Overview
+                    </a>
+                    <a href="https://github.com/mmk1102x?tab=repositories" class="nav-item">
+                        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
+                        Repositories
+                        <span id="repo-count" class="counter">0</span>
+                    </a>
+                    <a href="#" class="nav-item">
+                        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M0 3.75C0 2.784.784 2 1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0114.25 14H1.75A1.75 1.75 0 010 12.25v-8.5zm1.75-.25a.25.25 0 00-.25.25v8.5c0 .138.112.25.25.25h12.5a.25.25 0 00.25-.25v-8.5a.25.25 0 00-.25-.25H1.75zM3.5 6.25a.75.75 0 01.75-.75h7a.75.75 0 010 1.5h-7a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5h4a.75.75 0 000-1.5h-4z"></path></svg>
+                        Projects
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Pinned Repos -->
+            <div class="section-title">Popular repositories</div>
+            <div id="pinned-list" class="pinned-grid">
+                <div class="loading">Loading popular repos...</div>
+            </div>
+
+            <!-- Contribution Activity (30 Commits) -->
+            <div class="section-title">Contribution activity</div>
+            <div id="activity-list" class="activity-listing">
+                <div class="loading">Loading commits...</div>
+            </div>
+
         </div>
-
-        <h2>Latest Activity</h2>
-        <ul id="commit-list" class="commit-list">
-            <div class="loading">Loading history...</div>
-        </ul>
-
     </div>
 
     <script>
@@ -241,46 +344,46 @@
 
         async function init() {
             try {
-                // 1. Fetch Profile
+                // 1. Fetch User Data
                 const userRes = await fetch(`https://api.github.com/users/${USERNAME}`);
                 const user = await userRes.json();
                 
                 document.getElementById('avatar').src = user.avatar_url;
-                document.getElementById('name').textContent = user.name || user.login;
-                document.getElementById('bio').textContent = user.bio || 'Welcome to my GitHub portfolio.';
+                document.getElementById('name').textContent = user.name || USERNAME;
+                document.getElementById('login').textContent = user.login;
+                document.getElementById('bio').textContent = user.bio || '';
+                document.getElementById('followers').textContent = user.followers;
+                document.getElementById('following').textContent = user.following;
+                document.getElementById('repo-count').textContent = user.public_repos;
                 
-                // 2. Fetch Repositories
+                // 2. Fetch Repos (for Pinned section)
                 const reposRes = await fetch(`https://api.github.com/users/${USERNAME}/repos?sort=updated&per_page=100`);
                 const repos = await reposRes.json();
                 
-                renderRepos(repos);
+                renderPinnedRepos(repos);
                 
-                // 3. Fetch Activity (Try Events first, Fallback to Repo Commits)
+                // 3. Fetch Activity
                 try {
                     await loadGlobalEvents();
                 } catch (e) {
-                    console.warn("Events API failed, falling back to repo commits", e);
+                    console.log("Global events failed, trying fallback...");
                     await loadFallbackCommits(repos);
                 }
 
             } catch (error) {
                 console.error(error);
-                document.getElementById('bio').textContent = 'Error loading profile data.';
             }
         }
 
-        function renderRepos(repos) {
-            const container = document.getElementById('repo-list');
-            document.getElementById('repo-count').textContent = repos.length;
+        function renderPinnedRepos(repos) {
+            const container = document.getElementById('pinned-list');
             container.innerHTML = '';
-
-            if (!repos.length) {
-                container.innerHTML = '<div class="loading">No public repositories found.</div>';
-                return;
-            }
             
-            // Sort by stars descending, then updated
-            repos.sort((a, b) => b.stargazers_count - a.stargazers_count || new Date(b.updated_at) - new Date(a.updated_at));
+            // Filter out forks and sort by Stars descending to mimic "Popular"
+            const popular = repos
+                .filter(r => !r.fork)
+                .sort((a, b) => b.stargazers_count - a.stargazers_count)
+                .slice(0, 6); // Take top 6
 
             const colors = { 
                 JavaScript: '#f1e05a', HTML: '#e34c26', CSS: '#563d7c', 
@@ -288,97 +391,90 @@
                 Shell: '#89e051', C: '#555555', 'C++': '#f34b7d' 
             };
 
-            repos.forEach(repo => {
-                if (repo.fork) return; // Skip forks to clean up UI
-
-                const card = document.createElement('div');
-                card.className = 'repo-card';
+            popular.forEach(repo => {
                 const langColor = colors[repo.language] || '#ccc';
-                
-                card.innerHTML = `
-                    <div class="repo-name">
-                        <a href="${repo.html_url}" target="_blank">${repo.name}</a>
+                const div = document.createElement('div');
+                div.className = 'pinned-item';
+                div.innerHTML = `
+                    <div class="pinned-header">
+                        <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" class="repo-icon"><path fill-rule="evenodd" d="M2 2.5A2.5 2.5 0 014.5 0h8.75a.75.75 0 01.75.75v12.5a.75.75 0 01-.75.75h-2.5a.75.75 0 110-1.5h1.75v-2h-8a1 1 0 00-.714 1.7.75.75 0 01-1.072 1.05A2.495 2.495 0 012 11.5v-9zm10.5-1V9h-8c-.356 0-.694.074-1 .208V2.5a1 1 0 011-1h8zM5 12.25v3.25a.25.25 0 00.4.2l1.45-1.087a.25.25 0 01.3 0L8.6 15.7a.25.25 0 00.4-.2v-3.25a.25.25 0 00-.25-.25h-3.5a.25.25 0 00-.25.25z"></path></svg>
+                        <a href="${repo.html_url}" class="repo-link" target="_blank">${repo.name}</a>
+                        <span style="margin-left:auto; border:1px solid #d0d7de; border-radius:10px; px:7px; font-size:10px; color:#57606a; padding:0 7px">Public</span>
                     </div>
                     <div class="repo-desc">${repo.description || ''}</div>
                     <div class="repo-meta">
-                        ${repo.language ? `<span><span class="lang-circle" style="background:${langColor}"></span>${repo.language}</span>` : ''}
-                        <span>★ ${repo.stargazers_count}</span>
-                        <span>Updated ${new Date(repo.updated_at).toLocaleDateString()}</span>
+                        ${repo.language ? `<span><span class="lang-color" style="background:${langColor}"></span>${repo.language}</span>` : ''}
+                        <span>
+                           <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16" style="vertical-align:text-bottom"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"></path></svg>
+                           ${repo.stargazers_count}
+                        </span>
                     </div>
                 `;
-                container.appendChild(card);
+                container.appendChild(div);
             });
         }
 
-        // Strategy A: Global Events
         async function loadGlobalEvents() {
             const res = await fetch(`https://api.github.com/users/${USERNAME}/events?per_page=50`);
-            if (!res.ok) throw new Error('Events API error');
+            if (!res.ok) throw new Error('Events fail');
             const events = await res.json();
             
-            const container = document.getElementById('commit-list');
+            const container = document.getElementById('activity-list');
             container.innerHTML = '';
-            
+
             let count = 0;
             const max = 30;
 
-            for (const event of events) {
-                if (count >= max) break;
-                if (event.type === 'PushEvent' && event.payload.commits) {
-                    const commits = event.payload.commits.reverse();
-                    for (const commit of commits) {
-                        if (count >= max) break;
-                        addCommitToUI(commit.message, event.repo.name, event.created_at, commit.sha, container);
+            events.forEach(event => {
+                if (count >= max) return;
+                if (event.type === 'PushEvent') {
+                    event.payload.commits.reverse().forEach(commit => {
+                        if (count >= max) return;
+                        addTimelineItem(commit.message, event.created_at, event.repo.name, commit.sha, container);
                         count++;
-                    }
+                    });
                 }
-            }
-
-            if (count === 0) throw new Error('No recent push events');
+            });
+            if(count === 0) throw new Error('No events');
         }
 
-        // Strategy B: Fallback (Specific Repo)
         async function loadFallbackCommits(repos) {
-            // Find most recently updated non-fork repo
+            // Find most recent active repo
             const activeRepo = repos.filter(r => !r.fork).sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at))[0];
-            
-            if (!activeRepo) {
-                document.getElementById('commit-list').innerHTML = '<div class="loading">No repositories to fetch commits from.</div>';
-                return;
-            }
+            if (!activeRepo) return;
 
             const res = await fetch(`https://api.github.com/repos/${USERNAME}/${activeRepo.name}/commits?per_page=30`);
             const commits = await res.json();
             
-            const container = document.getElementById('commit-list');
+            const container = document.getElementById('activity-list');
             container.innerHTML = '';
-
+            
             commits.forEach(item => {
-                addCommitToUI(item.commit.message, activeRepo.name, item.commit.committer.date, item.sha, container);
+                addTimelineItem(item.commit.message, item.commit.committer.date, activeRepo.name, item.sha, container);
             });
         }
 
-        function addCommitToUI(msg, repoName, dateStr, sha, container) {
-            const li = document.createElement('li');
-            li.className = 'commit-item';
+        function addTimelineItem(msg, date, repoName, sha, container) {
+            const div = document.createElement('div');
+            div.className = 'timeline-item';
             
-            const shortMsg = msg.split('\n')[0];
-            const cleanDate = new Date(dateStr).toLocaleString();
-            const repoUrl = `https://github.com/${repoName}`;
-            const commitUrl = `https://github.com/${repoName}/commit/${sha}`;
-
-            li.innerHTML = `
-                <div>
-                    <div class="commit-msg">
-                        <a href="${commitUrl}" target="_blank">${shortMsg}</a>
-                    </div>
-                    <div class="commit-sub">
-                        in <a href="${repoUrl}" target="_blank">${repoName}</a>
+            const cleanDate = new Date(date);
+            const dateStr = cleanDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+            
+            div.innerHTML = `
+                <div class="timeline-icon">
+                    <svg aria-hidden="true" height="16" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"></path></svg>
+                </div>
+                <div class="timeline-body">
+                    <span style="font-weight:600">Pushed commit</span>
+                    <a href="https://github.com/${repoName}" target="_blank" style="color:var(--color-fg-default); font-weight:600">${repoName}</a>
+                    <div class="timeline-date">
+                        ${msg.split('\n')[0]} 
+                        <a href="https://github.com/${repoName}/commit/${sha}" target="_blank" class="commit-link">${sha.substring(0,7)}</a> · ${dateStr}
                     </div>
                 </div>
-                <div class="commit-date">${cleanDate}</div>
             `;
-            container.appendChild(li);
+            container.appendChild(div);
         }
 
         init();
