@@ -67,8 +67,8 @@
 
                 document.getElementById('avatar').src = u.avatar_url;
                 document.getElementById('fullname').innerText = u.name || u.login;
-                document.getElementById('bio').innerText = u.bio || "Architecting systems...";
-                document.getElementById('location').innerText = `📍 ${u.location || 'Hollow Knight'}`;
+                document.getElementById('bio').innerText = u.bio || "No bio";
+                document.getElementById('location').innerText = `${u.location || ' '}`;
                 document.getElementById('count-repos').innerText = u.public_repos;
                 document.getElementById('count-followers').innerText = u.followers;
                 document.getElementById('count-stars').innerText = r.reduce((s, repo) => s + repo.stargazers_count, 0);
