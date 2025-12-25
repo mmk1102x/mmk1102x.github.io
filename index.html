@@ -68,18 +68,12 @@
                 grid-template-rows: auto auto auto auto;
             }
             
-            /* Layout Mapping */
             .profile-card { grid-column: 1 / 2; grid-row: 1 / 3; }
             .stats-card   { grid-column: 2 / 3; grid-row: 1 / 2; }
             .persona-card { grid-column: 3 / 4; grid-row: 1 / 2; }
-            
-            /* NEW: Apps Section taking the prominent middle spot */
             .apps-card    { grid-column: 2 / 4; grid-row: 2 / 3; }
-            
-            /* Moved Tech and Graph down */
             .tech-card    { grid-column: 1 / 2; grid-row: 3 / 4; }
             .graph-card   { grid-column: 2 / 4; grid-row: 3 / 4; }
-            
             .activity-card{ grid-column: 1 / 4; grid-row: 4 / 5; }
         }
 
@@ -121,7 +115,7 @@
         .persona-title { font-size: 20px; font-weight: 700; margin-bottom: 5px; }
         .persona-desc { font-size: 13px; color: var(--text-sub); }
 
-        /* 4. NEW: Apps / Deployments */
+        /* 4. APPS / DEPLOYMENTS */
         .apps-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -141,12 +135,12 @@
         }
         .app-item:hover { background: var(--app-card-hover); border-color: var(--accent); text-decoration: none; }
         .app-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-        .app-name { font-weight: 600; font-size: 15px; color: var(--text-main); }
+        .app-name { font-weight: 600; font-size: 15px; color: var(--text-main); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .live-indicator { 
             width: 8px; height: 8px; background: var(--green); border-radius: 50%; 
-            box-shadow: 0 0 8px var(--green);
+            box-shadow: 0 0 8px var(--green); flex-shrink: 0;
         }
-        .app-desc { font-size: 12px; color: var(--text-sub); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .app-desc { font-size: 12px; color: var(--text-sub); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1; }
         .app-link-icon { margin-top: 10px; font-size: 12px; color: var(--accent); font-weight: 500; display: flex; align-items: center; gap: 4px; }
 
         /* 5. Tech Stack */
@@ -220,7 +214,7 @@
             </div>
         </div>
 
-        <!-- 4. APPS / DEPLOYMENTS (New Section) -->
+        <!-- 4. APPS / DEPLOYMENTS -->
         <div class="card apps-card" style="animation-delay: 0.3s">
             <h2>Deployments & Apps</h2>
             <div id="apps-list" class="apps-grid">
@@ -273,6 +267,7 @@
                 document.getElementById('total-repos').textContent = user.public_repos;
 
                 // 2. Repositories (Stats, Apps, Languages)
+                // We pull 100 sorted by updated to get the freshest projects
                 const reposRes = await fetch(`https://api.github.com/users/${USERNAME}/repos?per_page=100&sort=updated`);
                 const repos = await reposRes.json();
                 
@@ -308,16 +303,29 @@
             const container = document.getElementById('apps-list');
             container.innerHTML = '';
 
-            // Filter repos that have a "homepage" set
-            const deployments = repos.filter(repo => repo.homepage && repo.homepage.length > 0 && !repo.fork);
+            // FIXED LOGIC:
+            // 1. Include forks (removed !repo.fork)
+            // 2. Check for manual 'homepage' URL OR 'has_pages' boolean
+            const deployments = repos.filter(repo => {
+                return (repo.homepage && repo.homepage.length > 0) || repo.has_pages;
+            });
 
             if (deployments.length === 0) {
-                container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--text-sub); padding:20px;">No live deployments found.<br><small>Add a URL to your repo "About" section to see it here.</small></div>';
+                container.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--text-sub); padding:20px;">No live deployments found.<br><small>Enable GitHub Pages or add a URL to your repo settings.</small></div>';
                 return;
             }
 
             deployments.forEach(repo => {
-                const url = repo.homepage.startsWith('http') ? repo.homepage : `https://${repo.homepage}`;
+                // Construct URL if homepage is missing but Pages is active
+                let url = repo.homepage;
+                if (!url && repo.has_pages) {
+                    url = `https://${USERNAME}.github.io/${repo.name}`;
+                }
+                
+                // Ensure protocol
+                if (url && !url.startsWith('http')) {
+                    url = `https://${url}`;
+                }
                 
                 const item = document.createElement('a');
                 item.className = 'app-item';
@@ -342,7 +350,8 @@
             const stars = repos.reduce((acc, repo) => acc + repo.stargazers_count, 0);
             document.getElementById('total-stars').textContent = stars;
 
-            const includeForks = repos.length < 10;
+            // Include forks in stats if total repos are low (helps casual users show more data)
+            const includeForks = repos.length < 20; 
             const langCounts = {};
             let total = 0;
 
@@ -357,7 +366,7 @@
             const langContainer = document.getElementById('lang-list');
             langContainer.innerHTML = '';
             
-            const colors = { JavaScript: '#f1e05a', HTML: '#e34c26', CSS: '#563d7c', Python: '#3572A5', Java: '#b07219', TypeScript: '#2b7489' };
+            const colors = { JavaScript: '#f1e05a', HTML: '#e34c26', CSS: '#563d7c', Python: '#3572A5', Java: '#b07219', TypeScript: '#2b7489', 'C++': '#f34b7d', Shell: '#89e051' };
 
             if (sortedLangs.length === 0) {
                 langContainer.innerHTML = '<div class="loading">No data.</div>'; return;
